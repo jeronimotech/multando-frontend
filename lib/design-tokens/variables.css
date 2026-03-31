@@ -1,0 +1,151 @@
+/*
+ * Multando Design System — CSS Custom Properties
+ * Auto-generated from design tokens. Do not edit directly.
+ */
+
+:root {
+  /* Brand */
+  --color-brand-50: #eef4ff;
+  --color-brand-100: #d9e5ff;
+  --color-brand-200: #bccefd;
+  --color-brand-300: #8eabfb;
+  --color-brand-400: #5b80f5;
+  --color-brand-500: #e63946;
+  --color-brand-600: #dc2626;
+  --color-brand-700: #1d33d1;
+  --color-brand-800: #1e2da9;
+  --color-brand-900: #1e2b85;
+  --color-brand-950: #161b52;
+
+  /* Accent */
+  --color-accent-50: #fff8eb;
+  --color-accent-100: #fef3c7;
+  --color-accent-200: #fde68a;
+  --color-accent-300: #fcd34d;
+  --color-accent-400: #fbbd23;
+  --color-accent-500: #f59e0b;
+  --color-accent-600: #d97706;
+  --color-accent-700: #b45309;
+  --color-accent-800: #92400e;
+  --color-accent-900: #78350f;
+  --color-accent-950: #451a03;
+
+  /* Success */
+  --color-success-50: #ecfdf5;
+  --color-success-100: #d1fae5;
+  --color-success-200: #a7f3d0;
+  --color-success-300: #6ee7b7;
+  --color-success-400: #34d399;
+  --color-success-500: #10b981;
+  --color-success-600: #059669;
+  --color-success-700: #047857;
+  --color-success-800: #065f46;
+  --color-success-900: #064e3b;
+  --color-success-950: #022c22;
+
+  /* Danger */
+  --color-danger-50: #fef2f2;
+  --color-danger-100: #fee2e2;
+  --color-danger-200: #fecaca;
+  --color-danger-300: #fca5a5;
+  --color-danger-400: #f87171;
+  --color-danger-500: #ef4444;
+  --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+  --color-danger-800: #991b1b;
+  --color-danger-900: #7f1d1d;
+  --color-danger-950: #450a0a;
+
+  /* Warning */
+  --color-warning-50: #fffbeb;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+
+  /* Surfaces */
+  --color-surface-0: #ffffff;
+  --color-surface-50: #f8fafc;
+  --color-surface-100: #f1f5f9;
+  --color-surface-200: #e2e8f0;
+  --color-surface-300: #cbd5e1;
+  --color-surface-400: #94a3b8;
+  --color-surface-500: #64748b;
+  --color-surface-600: #475569;
+  --color-surface-700: #334155;
+  --color-surface-800: #1e293b;
+  --color-surface-900: #0f172a;
+  --color-surface-950: #020617;
+
+  /* Semantic tokens — Light mode */
+  --background: var(--color-surface-0);
+  --foreground: var(--color-surface-900);
+  --muted: var(--color-surface-50);
+  --muted-foreground: var(--color-surface-500);
+  --border: var(--color-surface-200);
+  --ring: var(--color-brand-500);
+  --card: var(--color-surface-0);
+  --card-foreground: var(--color-surface-900);
+  --popover: var(--color-surface-0);
+  --popover-foreground: var(--color-surface-900);
+  --primary: var(--color-brand-500);
+  --primary-foreground: #ffffff;
+  --secondary: var(--color-surface-100);
+  --secondary-foreground: var(--color-surface-900);
+  --accent: var(--color-accent-500);
+  --accent-foreground: #ffffff;
+  --destructive: var(--color-danger-500);
+  --destructive-foreground: #ffffff;
+  --input: var(--color-surface-200);
+  --placeholder: var(--color-surface-400);
+
+  /* Semantic text colors (WCAG AA compliant on white backgrounds) */
+  --brand-text: var(--color-brand-600);  /* #2542e4, ratio ~5.2:1 on white — passes AA */
+  --success-text: var(--color-success-700);  /* #047857, ratio ~5.4:1 */
+  --danger-text: var(--color-danger-600);  /* #dc2626, ratio ~4.6:1 */
+  --accent-text: var(--color-accent-700);  /* #b45309, ratio ~4.8:1 */
+
+  /* Typography */
+  --font-sans: "Inter Variable", Inter, system-ui, -apple-system, sans-serif;
+  --font-display: "Inter Variable", Inter, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius: 0.625rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-glow-brand: 0 0 20px rgba(59, 94, 239, 0.15);
+}
+
+.dark {
+  /* Semantic tokens — Dark mode */
+  --background: var(--color-surface-900);
+  --foreground: var(--color-surface-50);
+  --muted: var(--color-surface-800);
+  --muted-foreground: var(--color-surface-400);
+  --border: var(--color-surface-700);
+  --ring: var(--color-brand-400);
+  --card: var(--color-surface-800);
+  --card-foreground: var(--color-surface-50);
+  --popover: var(--color-surface-800);
+  --popover-foreground: var(--color-surface-50);
+  --primary: var(--color-brand-400);
+  --primary-foreground: var(--color-surface-900);
+  --secondary: var(--color-surface-700);
+  --secondary-foreground: var(--color-surface-50);
+  --accent: var(--color-accent-400);
+  --accent-foreground: var(--color-surface-900);
+  --destructive: var(--color-danger-400);
+  --destructive-foreground: var(--color-surface-50);
+  --input: var(--color-surface-700);
+  --placeholder: var(--color-surface-500);
+}
