@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import { multandoPreset } from "@multando/design-tokens/tailwind-preset";
+import { multandoPreset } from "./lib/design-tokens/tailwind-preset";
 
 const config: Config = {
   presets: [multandoPreset as Config],

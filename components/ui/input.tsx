@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
-import type { InputSize } from "@multando/ui";
+type InputSize = "sm" | "md" | "lg";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {

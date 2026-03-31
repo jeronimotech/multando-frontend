@@ -1,7 +1,8 @@
 import { forwardRef } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
-import type { ButtonVariant, ButtonSize } from "@multando/ui";
+type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger" | "link";
+type ButtonSize = "xs" | "sm" | "md" | "lg" | "xl" | "icon";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
