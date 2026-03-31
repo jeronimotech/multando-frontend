@@ -17,12 +17,16 @@ import {
   Menu,
   X,
   ChevronDown,
+  Users,
+  Webhook,
 } from "lucide-react";
 
 const navigation = [
   { name: "Dashboard", href: "/authority/dashboard", icon: LayoutDashboard },
   { name: "Reports", href: "/authority/reports", icon: FileText },
   { name: "Analytics", href: "/authority/analytics", icon: BarChart3 },
+  { name: "Staff", href: "/authority/staff", icon: Users },
+  { name: "Webhooks", href: "/authority/webhooks", icon: Webhook },
   { name: "Settings", href: "/authority/settings", icon: Settings },
 ];
 

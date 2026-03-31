@@ -1,24 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/hooks/use-translation";
+import { useAuth } from "@/hooks/use-auth";
 import { Shield } from "lucide-react";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
+  const { register } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
-    // TODO: Implement actual registration logic
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const formData = new FormData(e.currentTarget);
+    const firstName = formData.get("firstName") as string;
+    const lastName = formData.get("lastName") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
 
-    setIsLoading(false);
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      await register({ email, password, firstName, lastName });
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Registration failed. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -34,6 +58,13 @@ export default function RegisterPage() {
               {t('auth.create_account_subtitle')}
             </p>
           </div>
+
+          {/* Error message */}
+          {error && (
+            <div className="mb-4 rounded-lg bg-danger-50 p-3 text-sm text-danger-700 dark:bg-danger-950/30 dark:text-danger-400">
+              {error}
+            </div>
+          )}
 
           {/* Register Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -174,5 +205,13 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
   );
 }

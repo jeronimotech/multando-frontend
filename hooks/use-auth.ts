@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   User,
   LoginCredentials,
@@ -25,6 +25,7 @@ interface UseAuthReturn {
 
 export function useAuth(): UseAuthReturn {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -51,24 +52,27 @@ export function useAuth(): UseAuthReturn {
     async (credentials: LoginCredentials) => {
       const { user } = await authLogin(credentials);
       setUser(user);
-      router.push("/reports");
+      // Redirect to the page the user was trying to access, or dashboard
+      const redirect = searchParams.get("redirect") || "/dashboard";
+      router.push(redirect);
     },
-    [router]
+    [router, searchParams]
   );
 
   const register = useCallback(
     async (data: RegisterData) => {
       const { user } = await authRegister(data);
       setUser(user);
-      router.push("/reports");
+      const redirect = searchParams.get("redirect") || "/dashboard";
+      router.push(redirect);
     },
-    [router]
+    [router, searchParams]
   );
 
   const logout = useCallback(async () => {
     await authLogout();
     setUser(null);
-    router.push("/");
+    router.push("/login");
   }, [router]);
 
   return {

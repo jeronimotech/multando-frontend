@@ -24,6 +24,11 @@ class ApiClient {
   }
 
   private getAuthToken(): string | null {
+    // Try cookie first (set by new auth flow), then localStorage fallback
+    if (typeof document !== "undefined") {
+      const match = document.cookie.match(/multando_token=([^;]+)/);
+      if (match) return decodeURIComponent(match[1]);
+    }
     if (typeof window === "undefined") return null;
     return localStorage.getItem("token");
   }

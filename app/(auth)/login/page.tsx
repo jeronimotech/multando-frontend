@@ -1,23 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/hooks/use-translation";
+import { useAuth } from "@/hooks/use-auth";
 
-export default function LoginPage() {
+function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { t } = useTranslation();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
-    // TODO: Implement actual login logic
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
-    setIsLoading(false);
+    try {
+      await login({ email, password });
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Login failed. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -33,6 +46,13 @@ export default function LoginPage() {
               {t('auth.welcome_back')}
             </p>
           </div>
+
+          {/* Error message */}
+          {error && (
+            <div className="mb-4 rounded-lg bg-danger-50 p-3 text-sm text-danger-700 dark:bg-danger-950/30 dark:text-danger-400">
+              {error}
+            </div>
+          )}
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -132,5 +152,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }

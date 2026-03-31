@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { usePendingVerification } from "@/hooks/use-reports";
 import { useTranslation } from "@/hooks/use-translation";
+import { useAuth } from "@/hooks/use-auth";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import {
   LayoutDashboard,
@@ -20,6 +21,7 @@ import {
   LogOut,
   Settings,
   ChevronDown,
+  Loader2,
 } from "lucide-react";
 
 const navigation = [
@@ -40,21 +42,65 @@ const mobileNav = [
   { name: "profile", href: "/profile", icon: User },
 ];
 
+/**
+ * Get user initials from first and last name
+ */
+function getUserInitials(firstName?: string, lastName?: string): string {
+  const first = firstName?.charAt(0)?.toUpperCase() || "";
+  const last = lastName?.charAt(0)?.toUpperCase() || "";
+  return first + last || "?";
+}
+
+/**
+ * Get display name from user data
+ */
+function getUserDisplayName(firstName?: string, lastName?: string): string {
+  if (firstName && lastName) return `${firstName} ${lastName}`;
+  if (firstName) return firstName;
+  return "User";
+}
+
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { t } = useTranslation();
+  const { user, isLoading: authLoading, isAuthenticated, logout } = useAuth();
   const { data: pendingReports } = usePendingVerification();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const pendingCount = pendingReports?.length || 0;
 
+  // Client-side auth check (backup for middleware)
+  if (!authLoading && !isAuthenticated) {
+    router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+    return null;
+  }
+
+  // Show loading state while checking auth
+  if (authLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-surface-50 dark:bg-surface-900">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-500" />
+      </div>
+    );
+  }
+
+  const userInitials = getUserInitials(user?.firstName, user?.lastName);
+  const userDisplayName = getUserDisplayName(user?.firstName, user?.lastName);
+  const userEmail = user?.email || "";
+
   const isActive = (href: string) =>
     pathname === href || (href !== "/" && pathname.startsWith(href));
+
+  const handleLogout = async () => {
+    setUserMenuOpen(false);
+    await logout();
+  };
 
   const SidebarContent = () => (
     <>
@@ -105,15 +151,15 @@ export default function DashboardLayout({
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-900/30">
             <span className="text-sm font-medium text-brand-600 dark:text-brand-400">
-              JD
+              {userInitials}
             </span>
           </div>
           <div className="flex-1 truncate">
             <p className="text-sm font-medium text-surface-900 dark:text-white">
-              John Doe
+              {userDisplayName}
             </p>
             <p className="truncate text-xs text-surface-500 dark:text-surface-400">
-              john@example.com
+              {userEmail}
             </p>
           </div>
         </div>
@@ -188,7 +234,7 @@ export default function DashboardLayout({
               >
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-900/30">
                   <span className="text-xs font-medium text-brand-600 dark:text-brand-400">
-                    JD
+                    {userInitials}
                   </span>
                 </div>
                 <ChevronDown className="h-4 w-4 text-surface-400" />
@@ -217,7 +263,10 @@ export default function DashboardLayout({
                       Settings
                     </Link>
                     <div className="my-1 border-t border-surface-100 dark:border-surface-700" />
-                    <button className="flex w-full items-center gap-2 px-3 py-2 text-sm text-danger-600 hover:bg-danger-50 dark:text-danger-400 dark:hover:bg-danger-950">
+                    <button
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-danger-600 hover:bg-danger-50 dark:text-danger-400 dark:hover:bg-danger-950"
+                    >
                       <LogOut className="h-4 w-4" />
                       Log out
                     </button>

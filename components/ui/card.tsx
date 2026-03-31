@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
-type CardVariant = "default" | "interactive" | "glass" | "outline";
+import type { CardVariant } from "@multando/ui";
 
 const cardVariants: Record<CardVariant, string> = {
   default:
