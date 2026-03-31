@@ -12,6 +12,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Multando - Report Traffic Violations",
+  icons: { icon: "/favicon.png", apple: "/logo.png" },
   description: "Report traffic violations, earn rewards, and help make roads safer for everyone.",
   keywords: ["traffic violations", "report", "rewards", "road safety"],
 };

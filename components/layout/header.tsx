@@ -17,7 +17,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold text-brand-500">Multando</span>
+            <img src="/logo.png" alt="Multando" className="h-8 w-8" /><span className="text-xl font-bold text-brand-500">Multando</span>
           </Link>
 
           {/* Desktop Navigation */}

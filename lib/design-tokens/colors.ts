@@ -1,24 +1,24 @@
 /**
  * Multando Design System — Color Tokens
  *
- * Brand blue shifted to #3b5eef for a deeper, more distinctive civic identity.
+ * Brand blue shifted to #1a1a2e for a deeper, more distinctive civic identity.
  * Success shifted to emerald (#10b981) for a modern feel.
  */
 
 export const colors = {
   brand: {
-    50: "#eef4ff",
-    100: "#d9e5ff",
-    200: "#bccefd",
-    300: "#8eabfb",
-    400: "#5b80f5",
-    500: "#3b5eef",
-    600: "#2542e4",
-    700: "#1d33d1",
-    800: "#1e2da9",
-    900: "#1e2b85",
-    950: "#161b52",
-    DEFAULT: "#3b5eef",
+    50: "#fef2f2",
+    100: "#fee2e2",
+    200: "#fecaca",
+    300: "#fca5a5",
+    400: "#f87171",
+    500: "#e63946",
+    600: "#dc2626",
+    700: "#b91c1c",
+    800: "#991b1b",
+    900: "#7f1d1d",
+    950: "#450a0a",
+    DEFAULT: "#e63946",
   },
   accent: {
     50: "#fff8eb",

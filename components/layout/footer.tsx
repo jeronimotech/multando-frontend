@@ -34,7 +34,7 @@ export function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <Link href="/" className="inline-block">
-              <span className="text-xl font-bold text-brand-500">Multando</span>
+              <span className="text-xl font-bold text-brand-500"><img src="/logo.png" alt="Multando" className="h-7 w-7 inline mr-1" />Multando</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm text-surface-600 dark:text-surface-300">
               Report traffic violations, earn rewards, and help make roads safer
