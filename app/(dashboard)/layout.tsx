@@ -113,6 +113,7 @@ export default function DashboardLayout({
           className="text-xl font-bold text-brand-500"
           onClick={() => setSidebarOpen(false)}
         >
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-surface-900 dark:bg-surface-700"><img src="/logo.png" alt="Multando" className="h-6 w-6" /></span>
           Multando
         </Link>
       </div>
@@ -214,8 +215,9 @@ export default function DashboardLayout({
           {/* Mobile logo */}
           <Link
             href="/"
-            className="text-lg font-bold text-brand-500 lg:hidden"
+            className="flex items-center gap-2 text-lg font-bold text-brand-500 lg:hidden"
           >
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-surface-900 dark:bg-surface-700"><img src="/logo.png" alt="" className="h-5 w-5" /></span>
             Multando
           </Link>
 

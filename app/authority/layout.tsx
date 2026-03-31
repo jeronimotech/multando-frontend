@@ -103,9 +103,7 @@ export default function AuthorityLayout({
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 text-surface-900">
               <ShieldCheck className="h-5 w-5" />
             </div>
-            <span className="text-lg font-bold text-white"><img src="/logo.png" alt="" className="h-6 w-6 inline mr-1" />
-              Authority
-            </span>
+            <span className="text-lg font-bold text-white flex items-center gap-2"><span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-surface-700"><img src="/logo.png" alt="" className="h-5 w-5" /></span>Authority</span>
           </Link>
         </div>
 
