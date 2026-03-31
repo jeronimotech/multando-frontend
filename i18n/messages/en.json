@@ -585,7 +585,7 @@
     "exceeds_monthly_limit": "Exceeds monthly limit"
   },
   "landing": {
-    "hero_subtitle": "Report traffic violations, earn MULTA tokens, and withdraw anytime. No crypto wallet needed — we handle everything.",
+    "hero_subtitle": "Report traffic violations, earn reward points, and help make your city safer. Blockchain-ready for the future.",
     "stat_reports": "Reports Filed",
     "stat_verified": "Verified",
     "stat_earned": "MULTA Earned",
@@ -601,14 +601,14 @@
     "report_violation": "Report a Violation",
     "built_for_everyone": "Built for Everyone",
     "built_for_everyone_desc": "Whether you're tech-savvy or not, Multando makes it simple to earn rewards for safer roads",
-    "feature_no_wallet": "No Wallet Required",
-    "feature_no_wallet_desc": "We create and manage your wallet automatically. No seed phrases, no browser extensions, no gas fees.",
-    "feature_earn": "Earn While You Report",
-    "feature_earn_desc": "Every verified report earns you MULTA tokens. Stake them for 5% APY or withdraw anytime.",
-    "feature_security": "Bank-Grade Security",
-    "feature_security_desc": "Your wallet is secured with AES-256 encryption and multi-layer key management. Your tokens are always safe.",
-    "feature_advanced": "Advanced Mode Available",
-    "feature_advanced_desc": "Crypto-savvy? Connect your own Solana wallet anytime for full self-custodial control.",
+    "feature_no_wallet": "No Crypto Knowledge Needed",
+    "feature_no_wallet_desc": "We manage everything for you. No wallets, no gas fees, no seed phrases. Just report and earn.",
+    "feature_earn": "Earn Rewards",
+    "feature_earn_desc": "Earn MULTA points for every verified report. Points track your contribution and unlock badges, levels, and leaderboard rankings.",
+    "feature_security": "Blockchain-Ready",
+    "feature_security_desc": "Your rewards run on a parallel Solana devnet token today. When Multando scales across cities, we'll migrate to real blockchain tokens you can trade and stake.",
+    "feature_advanced": "Open for Developers",
+    "feature_advanced_desc": "Integrate violation reporting into your app with our SDKs. Available for Flutter, React Native, iOS, and Android.",
     "how_it_works": "How It Works",
     "how_it_works_desc": "Three simple steps to start contributing to road safety",
     "step1_title": "Spot a Violation",
@@ -616,7 +616,7 @@
     "step2_title": "Submit Report",
     "step2_desc": "Upload photos and details. Our community and AI system will verify the report for accuracy.",
     "step3_title": "Earn Rewards",
-    "step3_desc": "Earn MULTA tokens when your report is verified. Stake for passive income or withdraw to any Solana wallet — no crypto experience required.",
+    "step3_desc": "Earn MULTA points when your report is verified. Climb the leaderboard, unlock badges, and build your civic reputation. When we go live on blockchain, your points convert to real tokens.",
     "cta_title": "Ready to Make a Difference?",
     "cta_desc": "Join thousands of citizens making roads safer. Create a free account — your wallet is set up instantly. Start earning MULTA tokens today.",
     "cta_create_account": "Create Free Account",
@@ -849,5 +849,15 @@
     "section14_content": "For questions about these Terms of Service, please contact us:",
     "section14_email": "Email: legal@multando.com",
     "section14_address": "Multando S.A.S., Bogota, Colombia"
+  },
+  "rewards_info": {
+    "banner_title": "Rewards Preview",
+    "banner_desc": "Your MULTA points are currently tracked in our secure database. We're running a parallel test token on Solana's devnet (a test network with no real value). When Multando launches across multiple cities, your accumulated points will convert to real MULTA tokens on the Solana blockchain — tradeable, stakeable, and fully yours.",
+    "what_is_devnet": "What is devnet?",
+    "devnet_explanation": "It's Solana's test network where developers build and test without real money. It proves our blockchain infrastructure works and is ready for mainnet launch.",
+    "staking_preview_title": "Staking Preview",
+    "staking_preview_desc": "Test how staking will work when we go live on blockchain. Your staked points earn bonus rewards at the same 5% APY rate that will apply to real tokens.",
+    "points_note": "MULTA points have no monetary value at this time. They represent your contribution to road safety and will be the basis for future token distribution.",
+    "learn_more": "Learn more about our blockchain roadmap"
   }
 }

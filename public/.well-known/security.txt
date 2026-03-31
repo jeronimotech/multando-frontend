@@ -1,0 +1,7 @@
+Contact: mailto:security@multando.com
+Contact: https://multando.com/.well-known/security.txt
+Preferred-Languages: en, es
+Policy: https://multando.com/security-policy
+Source: https://github.com/jeronimotech/multando-blockchain
+Acknowledgments: https://multando.com/security-acknowledgments
+Expires: 2027-03-31T00:00:00.000Z

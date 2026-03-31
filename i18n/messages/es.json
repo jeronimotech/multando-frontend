@@ -585,7 +585,7 @@
     "exceeds_monthly_limit": "Excede limite mensual"
   },
   "landing": {
-    "hero_subtitle": "Reporta violaciones de transito, gana tokens MULTA y retira cuando quieras. No necesitas billetera crypto — nosotros nos encargamos de todo.",
+    "hero_subtitle": "Reporta violaciones de transito, gana puntos de recompensa y ayuda a hacer tu ciudad mas segura. Listo para blockchain en el futuro.",
     "stat_reports": "Reportes Enviados",
     "stat_verified": "Verificados",
     "stat_earned": "MULTA Ganados",
@@ -601,14 +601,14 @@
     "report_violation": "Reportar una Violacion",
     "built_for_everyone": "Hecho para Todos",
     "built_for_everyone_desc": "Seas experto en tecnologia o no, Multando hace simple ganar recompensas por calles mas seguras",
-    "feature_no_wallet": "Sin Billetera Necesaria",
-    "feature_no_wallet_desc": "Creamos y administramos tu billetera automaticamente. Sin frases semilla, sin extensiones de navegador, sin comisiones de gas.",
-    "feature_earn": "Gana Mientras Reportas",
-    "feature_earn_desc": "Cada reporte verificado te da tokens MULTA. Haz stake al 5% APY o retira cuando quieras.",
-    "feature_security": "Seguridad Bancaria",
-    "feature_security_desc": "Tu billetera esta protegida con encriptacion AES-256 y gestion de llaves multicapa. Tus tokens siempre estan seguros.",
-    "feature_advanced": "Modo Avanzado Disponible",
-    "feature_advanced_desc": "Eres experto en crypto? Conecta tu propia billetera Solana cuando quieras para control total.",
+    "feature_no_wallet": "Sin Conocimiento Crypto Necesario",
+    "feature_no_wallet_desc": "Nosotros administramos todo por ti. Sin billeteras, sin comisiones de gas, sin frases semilla. Solo reporta y gana.",
+    "feature_earn": "Gana Recompensas",
+    "feature_earn_desc": "Gana puntos MULTA por cada reporte verificado. Los puntos registran tu contribucion y desbloquean insignias, niveles y rankings.",
+    "feature_security": "Listo para Blockchain",
+    "feature_security_desc": "Tus recompensas corren en un token paralelo de prueba en Solana devnet hoy. Cuando Multando escale a mas ciudades, migraremos a tokens blockchain reales que podras intercambiar y hacer stake.",
+    "feature_advanced": "Abierto para Desarrolladores",
+    "feature_advanced_desc": "Integra reportes de violaciones en tu app con nuestros SDKs. Disponible para Flutter, React Native, iOS y Android.",
     "how_it_works": "Como Funciona",
     "how_it_works_desc": "Tres simples pasos para empezar a contribuir a la seguridad vial",
     "step1_title": "Detecta una Violacion",
@@ -616,7 +616,7 @@
     "step2_title": "Envia el Reporte",
     "step2_desc": "Sube fotos y detalles. Nuestra comunidad y sistema de IA verificaran el reporte.",
     "step3_title": "Gana Recompensas",
-    "step3_desc": "Gana tokens MULTA cuando tu reporte sea verificado. Haz stake para ingresos pasivos o retira a cualquier billetera Solana — sin experiencia crypto necesaria.",
+    "step3_desc": "Gana puntos MULTA cuando tu reporte sea verificado. Sube en la clasificacion, desbloquea insignias y construye tu reputacion civica. Cuando lancemos en blockchain, tus puntos se convierten en tokens reales.",
     "cta_title": "Listo para Hacer la Diferencia?",
     "cta_desc": "Unete a miles de ciudadanos haciendo las calles mas seguras. Crea una cuenta gratis — tu billetera se configura al instante. Empieza a ganar tokens MULTA hoy.",
     "cta_create_account": "Crear Cuenta Gratis",
@@ -849,5 +849,15 @@
     "section14_content": "Para preguntas sobre estos Terminos de Servicio, por favor contactanos:",
     "section14_email": "Correo: legal@multando.com",
     "section14_address": "Multando S.A.S., Bogota, Colombia"
+  },
+  "rewards_info": {
+    "banner_title": "Vista Previa de Recompensas",
+    "banner_desc": "Tus puntos MULTA actualmente se registran en nuestra base de datos segura. Estamos ejecutando un token de prueba paralelo en la devnet de Solana (una red de prueba sin valor real). Cuando Multando se lance en multiples ciudades, tus puntos acumulados se convertiran en tokens MULTA reales en la blockchain de Solana — intercambiables, stakeables y completamente tuyos.",
+    "what_is_devnet": "Que es devnet?",
+    "devnet_explanation": "Es la red de prueba de Solana donde los desarrolladores construyen y prueban sin dinero real. Demuestra que nuestra infraestructura blockchain funciona y esta lista para el lanzamiento en mainnet.",
+    "staking_preview_title": "Vista Previa de Staking",
+    "staking_preview_desc": "Prueba como funcionara el staking cuando lancemos en blockchain. Tus puntos en stake ganan recompensas bonus a la misma tasa de 5% APY que aplicara a tokens reales.",
+    "points_note": "Los puntos MULTA no tienen valor monetario en este momento. Representan tu contribucion a la seguridad vial y seran la base para la distribucion futura de tokens.",
+    "learn_more": "Conoce mas sobre nuestra hoja de ruta blockchain"
   }
 }

@@ -13,6 +13,7 @@ import { WalletModeSwitch } from '@/components/wallet/wallet-mode-switch';
 import { useMultaWallet } from '@/hooks/use-wallet';
 import { useTranslation } from '@/hooks/use-translation';
 import { api } from '@/lib/api';
+import { Info, FlaskConical } from 'lucide-react';
 
 interface WalletInfo {
   wallet_type: 'custodial' | 'self_custodial';
@@ -99,6 +100,32 @@ export default function WalletPage() {
         </p>
       </div>
 
+      {/* Rewards Preview Banner */}
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-800 dark:bg-amber-950/30">
+        <div className="flex items-start gap-3">
+          <FlaskConical className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400" />
+          <div className="space-y-2">
+            <h3 className="font-semibold text-amber-900 dark:text-amber-200">
+              {t('rewards_info.banner_title')}
+            </h3>
+            <p className="text-sm leading-relaxed text-amber-800 dark:text-amber-300">
+              {t('rewards_info.banner_desc')}
+            </p>
+            <div className="mt-3 rounded-lg bg-amber-100/60 p-3 dark:bg-amber-900/30">
+              <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
+                {t('rewards_info.what_is_devnet')}
+              </p>
+              <p className="mt-1 text-sm text-amber-800 dark:text-amber-300">
+                {t('rewards_info.devnet_explanation')}
+              </p>
+            </div>
+            <p className="text-xs text-amber-600 dark:text-amber-400">
+              {t('rewards_info.points_note')}
+            </p>
+          </div>
+        </div>
+      </div>
+
       {isCustodial ? (
         <>
           {/* Custodial Mode Layout */}
@@ -121,7 +148,17 @@ export default function WalletPage() {
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Left Column */}
             <div className="space-y-6">
-              <StakingCard walletType="custodial" balance={walletInfo?.balance ?? 0} stakedBalance={walletInfo?.staked_balance ?? 0} onAction={fetchWalletInfo} />
+              <div className="space-y-2">
+                <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 dark:border-blue-800 dark:bg-blue-950/30">
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-200">
+                    {t('rewards_info.staking_preview_title')}
+                  </p>
+                  <p className="mt-1 text-xs text-blue-700 dark:text-blue-300">
+                    {t('rewards_info.staking_preview_desc')}
+                  </p>
+                </div>
+                <StakingCard walletType="custodial" balance={walletInfo?.balance ?? 0} stakedBalance={walletInfo?.staked_balance ?? 0} onAction={fetchWalletInfo} />
+              </div>
               <WithdrawalCard
                 balance={walletInfo?.balance ?? 0}
                 onWithdrawalComplete={fetchWalletInfo}

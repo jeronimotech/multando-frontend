@@ -7,7 +7,7 @@ import { Footer } from '@/components/layout/footer';
 import { DynamicReportMap } from '@/components/map/dynamic-map';
 import { ReportCard, ReportCardSkeleton } from '@/components/reports/report-card';
 import { useReportMarkers, useReports } from '@/hooks/use-reports';
-import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Key, Coins, ShieldCheck, Building2, Check } from 'lucide-react';
+import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Coins, Zap, Code2, Building2, Check } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
 
 export default function HomePage() {
@@ -19,22 +19,22 @@ export default function HomePage() {
 
   const features = [
     {
-      icon: Wallet,
-      titleKey: 'landing.feature_no_wallet',
-      descKey: 'landing.feature_no_wallet_desc',
-    },
-    {
       icon: Coins,
       titleKey: 'landing.feature_earn',
       descKey: 'landing.feature_earn_desc',
     },
     {
-      icon: ShieldCheck,
+      icon: Zap,
       titleKey: 'landing.feature_security',
       descKey: 'landing.feature_security_desc',
     },
     {
-      icon: Key,
+      icon: Wallet,
+      titleKey: 'landing.feature_no_wallet',
+      descKey: 'landing.feature_no_wallet_desc',
+    },
+    {
+      icon: Code2,
       titleKey: 'landing.feature_advanced',
       descKey: 'landing.feature_advanced_desc',
     },
