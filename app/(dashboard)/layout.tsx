@@ -8,6 +8,7 @@ import { usePendingVerification } from "@/hooks/use-reports";
 import { useTranslation } from "@/hooks/use-translation";
 import { useAuth } from "@/hooks/use-auth";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { DevModeBanner } from "@/components/dev-mode-toggle";
 import {
   LayoutDashboard,
   FileText,
@@ -276,6 +277,9 @@ export default function DashboardLayout({
             </div>
           </div>
         </header>
+
+        {/* Sandbox mode banner */}
+        <DevModeBanner />
 
         {/* Skip navigation link */}
         <a href="#main-content" className="skip-nav">

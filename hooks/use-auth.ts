@@ -9,6 +9,7 @@ import {
   login as authLogin,
   register as authRegister,
   logout as authLogout,
+  socialLogin as authSocialLogin,
   getCurrentUser,
   isAuthenticated as checkIsAuthenticated,
 } from "@/lib/auth";
@@ -19,6 +20,10 @@ interface UseAuthReturn {
   isAuthenticated: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
+  socialLogin: (
+    provider: "google" | "github",
+    payload: { code: string; redirect_uri?: string }
+  ) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -69,6 +74,19 @@ export function useAuth(): UseAuthReturn {
     [router, searchParams]
   );
 
+  const socialLogin = useCallback(
+    async (
+      provider: "google" | "github",
+      payload: { code: string; redirect_uri?: string }
+    ) => {
+      await authSocialLogin(provider, payload);
+      await refreshUser();
+      const redirect = searchParams.get("redirect") || "/dashboard";
+      router.push(redirect);
+    },
+    [router, searchParams, refreshUser]
+  );
+
   const logout = useCallback(async () => {
     await authLogout();
     setUser(null);
@@ -81,6 +99,7 @@ export function useAuth(): UseAuthReturn {
     isAuthenticated: checkIsAuthenticated() && !!user,
     login,
     register,
+    socialLogin,
     logout,
     refreshUser,
   };

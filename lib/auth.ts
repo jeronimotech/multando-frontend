@@ -127,6 +127,22 @@ export async function register(
 }
 
 /**
+ * Social login (Google / GitHub)
+ * Sends the authorization code to the backend, which exchanges it for user info.
+ */
+export async function socialLogin(
+  provider: "google" | "github",
+  payload: { code: string; redirect_uri?: string }
+): Promise<{ tokens: AuthTokens }> {
+  const tokens = await api.post<AuthTokens>(`/auth/oauth/${provider}`, {
+    code: payload.code,
+    redirect_uri: payload.redirect_uri || "",
+  });
+  setTokens(tokens);
+  return { tokens };
+}
+
+/**
  * Logout user
  */
 export async function logout(): Promise<void> {

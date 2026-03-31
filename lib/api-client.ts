@@ -1,4 +1,5 @@
 import { API_BASE_URL } from './config';
+import { getApiBaseUrl } from '@/components/dev-mode-toggle';
 
 /**
  * Get the auth token from cookies (client-side only)
@@ -31,7 +32,7 @@ export function removeCookie(name: string): void {
  */
 export async function apiGet<T>(path: string): Promise<T> {
   const token = getAuthToken();
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await fetch(`${getApiBaseUrl()}${path}`, {
     method: 'GET',
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -62,7 +63,7 @@ export async function apiGet<T>(path: string): Promise<T> {
  */
 export async function apiPost<T>(path: string, body?: unknown): Promise<T> {
   const token = getAuthToken();
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await fetch(`${getApiBaseUrl()}${path}`, {
     method: 'POST',
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -93,7 +94,7 @@ export async function apiPost<T>(path: string, body?: unknown): Promise<T> {
  */
 export async function apiPut<T>(path: string, body?: unknown): Promise<T> {
   const token = getAuthToken();
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await fetch(`${getApiBaseUrl()}${path}`, {
     method: 'PUT',
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -124,7 +125,7 @@ export async function apiPut<T>(path: string, body?: unknown): Promise<T> {
  */
 export async function apiDelete<T>(path: string): Promise<T> {
   const token = getAuthToken();
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await fetch(`${getApiBaseUrl()}${path}`, {
     method: 'DELETE',
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
