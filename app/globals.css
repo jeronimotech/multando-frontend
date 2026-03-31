@@ -1,4 +1,4 @@
-@import "@multando/design-tokens/css";
+@import "../lib/design-tokens/variables.css";
 
 @tailwind base;
 @tailwind components;
