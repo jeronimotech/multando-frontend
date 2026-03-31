@@ -307,7 +307,22 @@
     "feature_types_desc": "Definiciones de tipos completas para Dart, TypeScript, Swift y Kotlin",
     "developer_portal": "Portal de Desarrolladores",
     "endpoints": "endpoints",
-    "github": "GitHub"
+    "github": "GitHub",
+    "environments_title": "Dos Ambientes",
+    "environments_desc": "Prueba tu integracion de forma segura en sandbox antes de ir a produccion",
+    "sandbox_title": "Sandbox",
+    "sandbox_label": "Para pruebas y desarrollo",
+    "production_title": "Produccion",
+    "production_label": "Para aplicaciones en vivo",
+    "api_key_format": "Formato de API Key",
+    "sandbox_feature1": "Pruebas ilimitadas y gratuitas",
+    "sandbox_feature2": "Sin tokens ni transacciones reales",
+    "sandbox_feature3": "Limites de tasa mas altos (300/min)",
+    "production_feature1": "Recompensas reales en tokens MULTA",
+    "production_feature2": "Datos y transacciones en vivo",
+    "production_feature3": "Limites de tasa estandar (60/min)",
+    "env_warning_title": "Las keys son exclusivas por ambiente",
+    "env_warning_desc": "Las keys de sandbox (mult_test_) solo funcionan en sandbox-api.multando.com. Las keys de produccion (mult_live_) solo funcionan en api.multando.com. No son intercambiables."
   },
   "wallet_components": {
     "total_balance": "Saldo Total",

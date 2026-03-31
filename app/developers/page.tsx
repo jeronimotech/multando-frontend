@@ -536,6 +536,92 @@ export default function DevelopersPage() {
           </div>
         </section>
 
+        {/* Environments Section */}
+        <section className="py-20 bg-white dark:bg-surface-900 border-t border-surface-200 dark:border-surface-700">
+          <div className="container-app">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
+                {t('developers.environments_title')}
+              </h2>
+              <p className="mt-3 text-surface-500 dark:text-surface-400">
+                {t('developers.environments_desc')}
+              </p>
+            </div>
+
+            <div className="mx-auto max-w-3xl grid gap-6 sm:grid-cols-2">
+              {/* Sandbox */}
+              <div className="rounded-xl border-2 border-accent-300 bg-accent-50/50 p-6 dark:border-accent-700 dark:bg-accent-950/20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-100 dark:bg-accent-900/30">
+                    <span className="text-lg">🧪</span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-surface-900 dark:text-white">{t('developers.sandbox_title')}</h3>
+                    <p className="text-xs text-accent-600 dark:text-accent-400">{t('developers.sandbox_label')}</p>
+                  </div>
+                </div>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="text-xs font-medium text-surface-500 mb-1">{t('developers.base_url')}</p>
+                    <code className="block rounded-lg bg-surface-900 px-3 py-2 font-mono text-xs text-accent-300">
+                      https://sandbox-api.multando.com/api/v1
+                    </code>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-surface-500 mb-1">{t('developers.api_key_format')}</p>
+                    <code className="block rounded-lg bg-surface-900 px-3 py-2 font-mono text-xs text-accent-300">
+                      mult_test_xxxxxxxxxxxxxxxx
+                    </code>
+                  </div>
+                  <ul className="space-y-1 text-surface-600 dark:text-surface-400">
+                    <li className="flex items-center gap-2"><span className="text-accent-500">●</span> {t('developers.sandbox_feature1')}</li>
+                    <li className="flex items-center gap-2"><span className="text-accent-500">●</span> {t('developers.sandbox_feature2')}</li>
+                    <li className="flex items-center gap-2"><span className="text-accent-500">●</span> {t('developers.sandbox_feature3')}</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Production */}
+              <div className="rounded-xl border-2 border-brand-300 bg-brand-50/50 p-6 dark:border-brand-700 dark:bg-brand-950/20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-100 dark:bg-brand-900/30">
+                    <span className="text-lg">🚀</span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-surface-900 dark:text-white">{t('developers.production_title')}</h3>
+                    <p className="text-xs text-brand-600 dark:text-brand-400">{t('developers.production_label')}</p>
+                  </div>
+                </div>
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <p className="text-xs font-medium text-surface-500 mb-1">{t('developers.base_url')}</p>
+                    <code className="block rounded-lg bg-surface-900 px-3 py-2 font-mono text-xs text-brand-300">
+                      https://api.multando.com/api/v1
+                    </code>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-surface-500 mb-1">{t('developers.api_key_format')}</p>
+                    <code className="block rounded-lg bg-surface-900 px-3 py-2 font-mono text-xs text-brand-300">
+                      mult_live_xxxxxxxxxxxxxxxx
+                    </code>
+                  </div>
+                  <ul className="space-y-1 text-surface-600 dark:text-surface-400">
+                    <li className="flex items-center gap-2"><span className="text-brand-500">●</span> {t('developers.production_feature1')}</li>
+                    <li className="flex items-center gap-2"><span className="text-brand-500">●</span> {t('developers.production_feature2')}</li>
+                    <li className="flex items-center gap-2"><span className="text-brand-500">●</span> {t('developers.production_feature3')}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 mx-auto max-w-3xl rounded-xl border border-warning-200 bg-warning-50 p-4 dark:border-warning-800 dark:bg-warning-950/30">
+              <p className="text-sm text-warning-800 dark:text-warning-200 text-center">
+                <strong>⚠️ {t('developers.env_warning_title')}</strong> — {t('developers.env_warning_desc')}
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Architecture diagram */}
         <section className="py-20 bg-surface-50 dark:bg-surface-800">
           <div className="container-app">
