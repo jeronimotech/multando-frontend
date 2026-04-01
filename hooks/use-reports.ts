@@ -170,9 +170,23 @@ export function useReports(filters?: ReportFilters) {
         });
       }
 
-      return api.get<PaginatedResponse<ReportSummary>>(
-        `/reports?${params.toString()}`
-      );
+      const raw = await api.get<any>(`/reports?${params.toString()}`);
+      // Backend returns { items, total, page, page_size }
+      // Frontend expects { data, pagination }
+      const items = raw.items || raw.data || [];
+      const total = raw.total || 0;
+      const page = raw.page || 1;
+      const pageSize = raw.page_size || filters?.limit || 10;
+      return {
+        data: items,
+        pagination: {
+          page,
+          limit: pageSize,
+          total,
+          totalPages: Math.ceil(total / pageSize),
+          hasMore: page * pageSize < total,
+        },
+      } as PaginatedResponse<ReportSummary>;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
