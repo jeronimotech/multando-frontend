@@ -49,7 +49,7 @@ const mockBadges: Badge[] = [
   {
     id: "badge-1",
     name: "First Report",
-    description: "Submit your first violation report.",
+    description: "Submit your first infraction report.",
     icon: "camera",
     earned: true,
     earnedAt: "2025-11-15T10:00:00Z",
@@ -76,7 +76,7 @@ const mockBadges: Badge[] = [
   {
     id: "badge-4",
     name: "Century Reporter",
-    description: "Submit 100 violation reports.",
+    description: "Submit 100 infraction reports.",
     icon: "target",
     earned: true,
     earnedAt: "2026-01-05T16:45:00Z",
@@ -85,7 +85,7 @@ const mockBadges: Badge[] = [
   {
     id: "badge-5",
     name: "Double Century",
-    description: "Submit 200 violation reports.",
+    description: "Submit 200 infraction reports.",
     icon: "award",
     earned: true,
     earnedAt: "2026-03-25T11:20:00Z",
@@ -139,7 +139,7 @@ const mockBadges: Badge[] = [
   {
     id: "badge-11",
     name: "Half K",
-    description: "Submit 500 violation reports.",
+    description: "Submit 500 infraction reports.",
     icon: "star",
     earned: false,
     earnedAt: null,
@@ -161,7 +161,7 @@ const mockLeaderboard: LeaderboardEntry[] = Array.from({ length: 25 }, (_, i) =>
   userId: `user-${i + 1}`,
   username: [
     "CivicHero99", "ReportQueen", "StreetWatcher", "MULTAKing",
-    "ViolationHunter", "SafeStreets", "CityGuardian", "TrafficEye",
+    "InfractionHunter", "SafeStreets", "CityGuardian", "TrafficEye",
     "JusticeRider", "ReportMaster", "UrbanPatrol", "RuleKeeper",
     "EagleEye", "SpeedTrap", "SidewalkHero", "ParkingPro",
     "SignalWatch", "LaneGuard", "CrosswalkChamp", "ZoneWarden",

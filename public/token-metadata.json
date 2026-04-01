@@ -1,7 +1,7 @@
 {
   "name": "MULTA",
   "symbol": "MULTA",
-  "description": "MULTA is the reward token of the Multando platform — a citizen-driven traffic violation reporting system. Earn MULTA points for reporting and verifying traffic violations. Currently database-backed with a parallel Solana devnet token. Real blockchain tokens coming when Multando scales across cities.",
+  "description": "MULTA is the reward token of the Multando platform — a citizen-driven traffic infraction reporting system. Earn MULTA points for reporting and verifying traffic infractions. Currently database-backed with a parallel Solana devnet token. Real blockchain tokens coming when Multando scales across cities.",
   "image": "https://multando.com/logo.png",
   "external_url": "https://multando.com",
   "attributes": [

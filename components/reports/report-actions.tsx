@@ -287,7 +287,7 @@ export function ReportActions({
   const reportUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/reports/${report.id}`
     : '';
-  const reportTitle = `Traffic Violation Report #${report.shortId}`;
+  const reportTitle = `Traffic Infraction Report #${report.shortId}`;
 
   const handleEdit = () => {
     router.push(`/reports/${report.id}/edit`);

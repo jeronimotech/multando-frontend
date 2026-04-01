@@ -115,7 +115,7 @@ export function LocationSelect({ className }: LocationSelectProps) {
             Select the incident location
           </h3>
           <p className="mt-1 text-sm text-blue-700 dark:text-blue-300">
-            Click on the map to select the exact location where the violation occurred,
+            Click on the map to select the exact location where the infraction occurred,
             or use the &quot;Use my location&quot; button to use your current position.
           </p>
         </div>

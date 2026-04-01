@@ -200,12 +200,12 @@ export function useReport(id: string) {
             id: summary.infractionCode,
             code: summary.infractionCode,
             name: summary.infraction,
-            description: `Traffic violation: ${summary.infraction}`,
+            description: `Traffic infraction: ${summary.infraction}`,
             fineAmount: 5000,
             points: 3,
             category: 'Traffic',
           },
-          description: 'Violation observed and documented.',
+          description: 'Infraction observed and documented.',
           evidence: [
             {
               id: `ev-${id}-1`,

@@ -137,7 +137,7 @@ export function EvidenceUpload({ className }: EvidenceUploadProps) {
           </h3>
           <p className="mt-1 text-sm text-blue-700 dark:text-blue-300">
             Upload evidence to support your report. Photos and videos help verify the
-            violation. Maximum {MAX_FILES} files, 50MB each.
+            infraction. Maximum {MAX_FILES} files, 50MB each.
           </p>
         </div>
       </div>
@@ -331,7 +331,7 @@ export function EvidenceUpload({ className }: EvidenceUploadProps) {
           </li>
           <li className="flex items-start gap-2">
             <span className="mt-1 text-brand-500">&#x2022;</span>
-            Capture the violation in action if possible
+            Capture the infraction in action if possible
           </li>
           <li className="flex items-start gap-2">
             <span className="mt-1 text-brand-500">&#x2022;</span>

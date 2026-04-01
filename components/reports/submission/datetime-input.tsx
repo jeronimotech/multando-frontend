@@ -145,7 +145,7 @@ export function DateTimeInput({ className }: DateTimeInputProps) {
             When did the incident occur?
           </h3>
           <p className="mt-1 text-sm text-blue-700 dark:text-blue-300">
-            Select the date and time when you witnessed the traffic violation.
+            Select the date and time when you witnessed the traffic infraction.
             You cannot select a future date or time.
           </p>
         </div>

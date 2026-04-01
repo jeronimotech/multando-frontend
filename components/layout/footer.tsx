@@ -3,7 +3,7 @@ import Link from "next/link";
 const footerLinks = {
   product: [
     { name: "How It Works", href: "#learn-more" },
-    { name: "Report Violation", href: "/reports/new" },
+    { name: "Report Infraction", href: "/reports/new" },
     { name: "Rewards", href: "/rewards" },
     { name: "Developers", href: "/developers" },
     { name: "API Docs", href: "/docs" },
@@ -37,7 +37,7 @@ export function Footer() {
               <span className="text-xl font-bold text-brand-500 flex items-center gap-2"><span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-surface-900 dark:bg-surface-700"><img src="/logo.png" alt="Multando" className="h-6 w-6" /></span>Multando</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm text-surface-600 dark:text-surface-300">
-              Report traffic violations, earn rewards, and help make roads safer
+              Report traffic infractions, earn rewards, and help make roads safer
               for everyone in your community.
             </p>
             {/* Social Links */}

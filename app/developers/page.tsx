@@ -145,7 +145,7 @@ print("Report: \\(report.shortId)")`,
 ReportFormView(client: client) { report in
     print("Created: \\(report.shortId)")
 }
-.navigationTitle("Report Violation")`,
+.navigationTitle("Report Infraction")`,
   },
   android: {
     init: `import com.multando.sdk.MultandoSDK
@@ -208,7 +208,7 @@ const API_SECTIONS = [
     title: 'Reports',
     icon: FileText,
     endpoints: [
-      { method: 'POST', path: '/reports', desc: 'Create a violation report', auth: true },
+      { method: 'POST', path: '/reports', desc: 'Create an infraction report', auth: true },
       { method: 'GET', path: '/reports', desc: 'List reports (paginated, filterable)' },
       { method: 'GET', path: '/reports/{id}', desc: 'Get report detail by ID or short_id' },
       { method: 'GET', path: '/reports/by-plate/{plate}', desc: 'Reports by vehicle plate' },

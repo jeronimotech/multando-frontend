@@ -30,7 +30,7 @@ const INFRACTIONS = [
   { code: 'PHN001', name: 'Phone While Driving', category: 'Safety', icon: '📱', severity: 'high', points: 15, tokens: 10 },
   { code: 'SBT001', name: 'No Seatbelt', category: 'Safety', icon: '🔒', severity: 'medium', points: 10, tokens: 5 },
   { code: 'HLM001', name: 'No Helmet', category: 'Safety', icon: '⛑️', severity: 'medium', points: 10, tokens: 8 },
-  { code: 'OTH001', name: 'Other Violation', category: 'Behavior', icon: '⚠️', severity: 'low', points: 5, tokens: 3 },
+  { code: 'OTH001', name: 'Other Infraction', category: 'Behavior', icon: '⚠️', severity: 'low', points: 5, tokens: 3 },
 ];
 
 export function CaptureStep() {

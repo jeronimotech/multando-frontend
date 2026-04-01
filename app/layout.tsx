@@ -11,10 +11,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Multando - Report Traffic Violations",
+  title: "Multando - Report Traffic Infractions",
   icons: { icon: "/favicon.png", apple: "/logo.png" },
-  description: "Report traffic violations, earn rewards, and help make roads safer for everyone.",
-  keywords: ["traffic violations", "report", "rewards", "road safety"],
+  description: "Report traffic infractions, earn rewards, and help make roads safer for everyone.",
+  keywords: ["traffic infractions", "report", "rewards", "road safety"],
 };
 
 export default function RootLayout({

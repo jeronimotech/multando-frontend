@@ -149,7 +149,7 @@ const MOCK_INFRACTIONS: InfractionWithIcon[] = [
   {
     id: 'inf-013',
     code: 'PRK-004',
-    name: 'Handicap Zone Violation',
+    name: 'Handicap Zone Infraction',
     description: 'Parking in a handicap space without permit',
     fineAmount: 10000,
     points: 3,
@@ -159,7 +159,7 @@ const MOCK_INFRACTIONS: InfractionWithIcon[] = [
   {
     id: 'inf-014',
     code: 'PRK-005',
-    name: 'Fire Lane Violation',
+    name: 'Fire Lane Infraction',
     description: 'Parking in a designated fire lane',
     fineAmount: 8000,
     points: 2,
@@ -282,19 +282,19 @@ export const INFRACTION_CATEGORIES: {
     id: 'speed',
     name: 'Speed',
     icon: 'Gauge',
-    description: 'Speeding and reckless driving violations',
+    description: 'Speeding and reckless driving infractions',
   },
   {
     id: 'safety',
     name: 'Safety',
     icon: 'ShieldAlert',
-    description: 'Safety equipment and traffic signal violations',
+    description: 'Safety equipment and traffic signal infractions',
   },
   {
     id: 'parking',
     name: 'Parking',
     icon: 'ParkingCircle',
-    description: 'Illegal parking and obstruction violations',
+    description: 'Illegal parking and obstruction infractions',
   },
   {
     id: 'behavior',

@@ -118,7 +118,7 @@ export default function AuthoritySettingsPage() {
             <div>
               <p className="font-medium text-surface-900 dark:text-white">High Priority Alerts</p>
               <p className="text-sm text-surface-500 dark:text-surface-400">
-                Get instant alerts for critical violations
+                Get instant alerts for critical infractions
               </p>
             </div>
             <label className="relative inline-flex cursor-pointer items-center">

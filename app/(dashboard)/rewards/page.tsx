@@ -63,7 +63,7 @@ const badges = [
   {
     id: '4',
     name: 'Speed Demon',
-    description: 'Report 5 speeding violations in one day',
+    description: 'Report 5 speeding infractions in one day',
     icon: Zap,
     earned: false,
     progress: 60,

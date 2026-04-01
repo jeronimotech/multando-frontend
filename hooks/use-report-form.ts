@@ -133,7 +133,7 @@ export const STEP_TITLES = [
 
 export const STEP_DESCRIPTIONS = [
   'Add evidence and select the infraction type',
-  'Review and confirm the violation details',
+  'Review and confirm the infraction details',
   'Review summary and submit your report',
 ];
 
