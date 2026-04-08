@@ -171,9 +171,24 @@ export function useReports(filters?: ReportFilters) {
       }
 
       const raw = await api.get<any>(`/reports?${params.toString()}`);
-      // Backend returns { items, total, page, page_size }
-      // Frontend expects { data, pagination }
-      const items = raw.items || raw.data || [];
+      // Backend returns { items, total, page, page_size } with snake_case fields
+      // Frontend expects { data, pagination } with camelCase fields
+      const rawItems = raw.items || raw.data || [];
+      const items = rawItems.map((r: any) => ({
+        ...r,
+        shortId: r.short_id || r.shortId || '',
+        vehiclePlate: r.vehicle_plate || r.vehiclePlate || '',
+        infractionCode: typeof r.infraction === 'object' ? r.infraction?.code : r.infractionCode,
+        infraction: typeof r.infraction === 'object' ? r.infraction?.name_en : r.infraction,
+        vehicleType: r.vehicle_type || r.vehicleType,
+        createdAt: r.created_at || r.createdAt,
+        location: r.location ? {
+          lat: r.location.lat || r.location.latitude,
+          lon: r.location.lon || r.location.longitude,
+          address: r.location.address,
+          city: r.location.city,
+        } : undefined,
+      }));
       const total = raw.total || 0;
       const page = raw.page || 1;
       const pageSize = raw.page_size || filters?.limit || 10;

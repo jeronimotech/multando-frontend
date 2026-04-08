@@ -103,7 +103,7 @@ export function ReportCard({
                   <StatusBadge status={report.status} />
                 </div>
                 <p className="text-xs text-surface-500 dark:text-surface-400 truncate">
-                  {report.infraction}
+                  {typeof report.infraction === 'object' ? (report.infraction as any)?.name_en || (report.infraction as any)?.code : report.infraction}
                 </p>
               </div>
             </div>
@@ -159,10 +159,10 @@ export function ReportCard({
             <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-warning-500" />
             <div>
               <p className="text-sm font-medium text-surface-900 dark:text-white">
-                {report.infraction}
+                {typeof report.infraction === 'object' ? (report.infraction as any)?.name_en || (report.infraction as any)?.code : report.infraction}
               </p>
               <p className="text-xs text-surface-500 dark:text-surface-400">
-                Code: {report.infractionCode}
+                Code: {typeof report.infraction === 'object' ? (report.infraction as any)?.code : report.infractionCode}
               </p>
             </div>
           </div>
