@@ -20,6 +20,25 @@
   border: none;
 }
 
+/* Multando hand-shaped pin */
+.multando-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.multando-pin {
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.multando-pin:hover {
+  transform: scale(1.15) translateY(-2px);
+}
+
 .marker-pin {
   width: 30px;
   height: 42px;

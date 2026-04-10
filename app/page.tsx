@@ -137,7 +137,7 @@ export default function HomePage() {
                 <div className="mt-4 flex items-center justify-between">
                   <div className="flex items-center gap-4 text-sm">
                     <span className="flex items-center gap-1.5">
-                      <span className="h-3 w-3 rounded-full bg-blue-500" />
+                      <span className="h-3 w-3 rounded-full bg-amber-500" />
                       <span className="text-surface-600 dark:text-surface-400">{t('landing.map_pending')}</span>
                     </span>
                     <span className="flex items-center gap-1.5">

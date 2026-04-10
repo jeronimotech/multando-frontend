@@ -30,28 +30,46 @@ export interface ReportMapProps {
   showCurrentLocation?: boolean;
 }
 
-// Custom marker icons by status
+// Custom marker icons by status — Multando hand pin
 const createMarkerIcon = (status: ReportMarker['status']): L.DivIcon => {
   const colors = {
-    pending: { bg: '#3b82f6', border: '#2563eb' }, // Blue
-    verified: { bg: '#22c55e', border: '#16a34a' }, // Green
-    rejected: { bg: '#ef4444', border: '#dc2626' }, // Red
+    pending: '#f59e0b',  // Amber
+    verified: '#22c55e', // Green
+    rejected: '#ef4444', // Red
   };
+  const color = colors[status];
 
-  const { bg, border } = colors[status];
-
+  // Hand-shaped pin with camera lens, tinted by status
   return L.divIcon({
-    className: 'custom-marker',
+    className: 'multando-marker',
     html: `
-      <div class="marker-pin" style="background-color: ${bg}; border-color: ${border};">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="16" height="16">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+      <div class="multando-pin">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 80" width="40" height="50">
+          <!-- Drop shadow filter -->
+          <defs>
+            <filter id="shadow-${status}" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.4"/>
+            </filter>
+          </defs>
+          <!-- Hand silhouette -->
+          <g filter="url(#shadow-${status})">
+            <!-- Palm + 4 fingers shape -->
+            <path d="M16 28 Q16 12 22 12 Q26 12 26 22 L26 28 Q26 12 30 12 Q34 12 34 22 L34 28 Q34 8 38 8 Q42 8 42 22 L42 28 Q42 14 46 14 Q50 14 50 26 L50 44 Q50 60 32 64 Q14 60 14 44 L14 32 Q14 26 16 28 Z"
+                  fill="white"
+                  stroke="${color}"
+                  stroke-width="2.5"/>
+            <!-- Camera lens center -->
+            <circle cx="32" cy="42" r="11" fill="${color}" opacity="0.95"/>
+            <circle cx="32" cy="42" r="8" fill="#1a1a2e"/>
+            <circle cx="32" cy="42" r="5" fill="${color}" opacity="0.6"/>
+            <circle cx="29" cy="39" r="2" fill="white" opacity="0.9"/>
+          </g>
         </svg>
       </div>
     `,
-    iconSize: [30, 42],
-    iconAnchor: [15, 42],
-    popupAnchor: [0, -42],
+    iconSize: [40, 50],
+    iconAnchor: [20, 50],
+    popupAnchor: [0, -45],
   });
 };
 
