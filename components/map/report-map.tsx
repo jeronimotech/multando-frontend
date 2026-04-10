@@ -20,6 +20,14 @@ import './map.css';
 const DEFAULT_CENTER: [number, number] = [4.7110, -74.0721];
 const DEFAULT_ZOOM = 12;
 
+// Mask plate for privacy: show first 3 chars + bullets (e.g. "ABC•••")
+function maskPlate(plate: string): string {
+  if (!plate) return '';
+  const visible = plate.slice(0, 3);
+  const hidden = '•'.repeat(Math.max(plate.length - 3, 3));
+  return `${visible}${hidden}`;
+}
+
 export interface ReportMapProps {
   markers?: ReportMarker[];
   center?: [number, number];
@@ -238,7 +246,7 @@ export function ReportMap({
           <div className="p-1">
             <div className="mb-2 flex items-center justify-between">
               <span className="font-mono text-sm font-semibold text-surface-900">
-                {marker.vehiclePlate}
+                {maskPlate(marker.vehiclePlate)}
               </span>
               <StatusBadge status={marker.status} />
             </div>

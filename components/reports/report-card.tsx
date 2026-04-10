@@ -22,6 +22,14 @@ export interface ReportCardProps {
   className?: string;
   showImage?: boolean;
   compact?: boolean;
+  maskPlate?: boolean;
+}
+
+function maskPlateString(plate: string): string {
+  if (!plate) return '';
+  const visible = plate.slice(0, 3);
+  const hidden = '•'.repeat(Math.max(plate.length - 3, 3));
+  return `${visible}${hidden}`;
 }
 
 // Vehicle type icons
@@ -75,8 +83,10 @@ export function ReportCard({
   className,
   showImage = true,
   compact = false,
+  maskPlate = false,
 }: ReportCardProps) {
   const VehicleIcon = vehicleIcons[report.vehicleType] || vehicleIcons.other;
+  const displayPlate = maskPlate ? maskPlateString(report.vehiclePlate) : report.vehiclePlate;
 
   if (compact) {
     return (
@@ -98,7 +108,7 @@ export function ReportCard({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-mono text-sm font-semibold text-surface-900 dark:text-white truncate">
-                    {report.vehiclePlate}
+                    {displayPlate}
                   </span>
                   <StatusBadge status={report.status} />
                 </div>
@@ -144,7 +154,7 @@ export function ReportCard({
               </div>
               <div>
                 <span className="font-mono text-base font-bold text-surface-900 dark:text-white">
-                  {report.vehiclePlate}
+                  {displayPlate}
                 </span>
                 <p className="text-xs text-surface-500 dark:text-surface-400">
                   ID: {report.shortId}
