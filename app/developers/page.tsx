@@ -27,6 +27,9 @@ import {
   FileText,
   ChevronDown,
   ChevronRight,
+  Map as MapIcon,
+  LayoutGrid,
+  Palette,
 } from 'lucide-react';
 
 // SDK options
@@ -212,6 +215,8 @@ const API_SECTIONS = [
       { method: 'GET', path: '/reports', desc: 'List reports (paginated, filterable)' },
       { method: 'GET', path: '/reports/{id}', desc: 'Get report detail by ID or short_id' },
       { method: 'GET', path: '/reports/by-plate/{plate}', desc: 'Reports by vehicle plate' },
+      { method: 'GET', path: '/reports/geojson', desc: 'Public GeoJSON FeatureCollection' },
+      { method: 'GET', path: '/widget/reports-map', desc: 'Embeddable HTML map widget' },
       { method: 'DELETE', path: '/reports/{id}', desc: 'Delete a pending report', auth: true },
     ],
   },
@@ -442,6 +447,332 @@ export default function DevelopersPage() {
                 <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
                   <code>{currentExamples[activeExample]}</code>
                 </pre>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Public Data API (GeoJSON) */}
+        <section id="geojson" className="py-20 bg-white dark:bg-surface-900 border-t border-surface-200 dark:border-surface-700">
+          <div className="container-app">
+            <div className="text-center mb-12">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-success-500/10 px-4 py-1.5 text-sm font-medium text-success-600 dark:text-success-400">
+                <MapIcon className="h-4 w-4" />
+                GeoJSON
+              </div>
+              <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
+                {t('developers.geojson_title')}
+              </h2>
+              <p className="mt-3 max-w-2xl mx-auto text-surface-500 dark:text-surface-400">
+                {t('developers.geojson_subtitle')}
+              </p>
+            </div>
+
+            <div className="mx-auto max-w-3xl space-y-6">
+              {/* Endpoint URL */}
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-surface-500">
+                  {t('developers.geojson_endpoint_label')}
+                </p>
+                <div className="flex items-center gap-2 rounded-xl bg-surface-900 p-4 dark:bg-surface-950">
+                  <span className="inline-flex items-center justify-center rounded-md bg-success-500/20 px-2 py-0.5 font-mono text-xs font-bold text-success-300">
+                    GET
+                  </span>
+                  <code className="flex-1 overflow-x-auto text-sm text-surface-200">
+                    https://api.multando.com/api/v1/reports/geojson
+                  </code>
+                  <button
+                    onClick={() =>
+                      copyToClipboard(
+                        'https://api.multando.com/api/v1/reports/geojson',
+                        'geojson-url'
+                      )
+                    }
+                    className="shrink-0 rounded p-1 text-surface-400 hover:text-white"
+                  >
+                    {copiedId === 'geojson-url' ? (
+                      <Check className="h-4 w-4 text-success-400" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Params table */}
+              <div>
+                <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                  {t('developers.geojson_params_title')}
+                </h3>
+                <div className="overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700">
+                  <table className="w-full text-sm">
+                    <thead className="bg-surface-50 dark:bg-surface-800">
+                      <tr className="text-left text-xs font-semibold uppercase tracking-wider text-surface-500">
+                        <th className="px-4 py-3">Param</th>
+                        <th className="px-4 py-3">Type</th>
+                        <th className="px-4 py-3">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-surface-100 dark:divide-surface-700">
+                      {[
+                        { name: 'city_id', type: 'int', descKey: 'developers.geojson_param_city' },
+                        { name: 'status', type: 'string', descKey: 'developers.geojson_param_status' },
+                        { name: 'since', type: 'ISO 8601', descKey: 'developers.geojson_param_since' },
+                        { name: 'bbox', type: 'string', descKey: 'developers.geojson_param_bbox' },
+                        { name: 'limit', type: 'int', descKey: 'developers.geojson_param_limit' },
+                        { name: 'api_key', type: 'string', descKey: 'developers.geojson_param_apikey' },
+                      ].map((p) => (
+                        <tr key={p.name} className="bg-white dark:bg-surface-900">
+                          <td className="px-4 py-3 font-mono text-brand-600 dark:text-brand-400">{p.name}</td>
+                          <td className="px-4 py-3 font-mono text-xs text-surface-500">{p.type}</td>
+                          <td className="px-4 py-3 text-surface-700 dark:text-surface-300">
+                            {t(p.descKey)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* curl example */}
+              <div>
+                <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                  {t('developers.geojson_curl_title')}
+                </h3>
+                <div className="relative rounded-xl bg-surface-900 p-5 dark:bg-surface-950">
+                  <button
+                    onClick={() =>
+                      copyToClipboard(
+                        `curl 'https://api.multando.com/api/v1/reports/geojson?city_id=1&status=approved,community_verified&limit=500'`,
+                        'geojson-curl'
+                      )
+                    }
+                    className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
+                  >
+                    {copiedId === 'geojson-curl' ? (
+                      <Check className="h-4 w-4 text-success-400" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </button>
+                  <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
+                    <code>{`curl 'https://api.multando.com/api/v1/reports/geojson?city_id=1&status=approved,community_verified&limit=500'`}</code>
+                  </pre>
+                </div>
+              </div>
+
+              {/* Leaflet example */}
+              <div>
+                <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                  {t('developers.geojson_leaflet_title')}
+                </h3>
+                <div className="relative rounded-xl bg-surface-900 p-5 dark:bg-surface-950">
+                  <button
+                    onClick={() =>
+                      copyToClipboard(
+                        `<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<div id="map" style="height:500px"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const map = L.map('map').setView([4.711, -74.072], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  fetch('https://api.multando.com/api/v1/reports/geojson?city_id=1')
+    .then(r => r.json())
+    .then(data => L.geoJSON(data).addTo(map));
+</script>`,
+                        'geojson-leaflet'
+                      )
+                    }
+                    className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
+                  >
+                    {copiedId === 'geojson-leaflet' ? (
+                      <Check className="h-4 w-4 text-success-400" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </button>
+                  <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
+                    <code>{`<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<div id="map" style="height:500px"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const map = L.map('map').setView([4.711, -74.072], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  fetch('https://api.multando.com/api/v1/reports/geojson?city_id=1')
+    .then(r => r.json())
+    .then(data => L.geoJSON(data).addTo(map));
+</script>`}</code>
+                  </pre>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-success-200 bg-success-50 p-4 dark:border-success-800 dark:bg-success-950/30">
+                <p className="text-sm text-success-800 dark:text-success-200">
+                  <Shield className="inline h-4 w-4 mr-1" />
+                  {t('developers.geojson_privacy_note')}
+                </p>
+              </div>
+
+              <div className="text-center">
+                <a
+                  href="https://api.multando.com/api/v1/widget/reports-map?height=500"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-brand-500 hover:text-brand-600"
+                >
+                  {t('developers.geojson_live_example')} <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Embeddable Widget */}
+        <section id="widget" className="py-20 bg-surface-50 dark:bg-surface-800">
+          <div className="container-app">
+            <div className="text-center mb-12">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-accent-500/10 px-4 py-1.5 text-sm font-medium text-accent-600 dark:text-accent-400">
+                <LayoutGrid className="h-4 w-4" />
+                iframe
+              </div>
+              <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
+                {t('developers.widget_headline')}
+              </h2>
+              <p className="mt-3 max-w-2xl mx-auto text-surface-500 dark:text-surface-400">
+                {t('developers.widget_subtitle')}
+              </p>
+            </div>
+
+            <div className="mx-auto max-w-4xl space-y-8">
+              {/* Embed code */}
+              <div>
+                <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                  {t('developers.widget_embed_title')}
+                </h3>
+                <div className="relative rounded-xl bg-surface-900 p-5 dark:bg-surface-950">
+                  <button
+                    onClick={() =>
+                      copyToClipboard(
+                        `<iframe
+  src="https://api.multando.com/api/v1/widget/reports-map?city_id=1&primary_color=0066cc&height=500"
+  width="100%" height="500" frameborder="0" allow="geolocation"></iframe>`,
+                        'widget-embed'
+                      )
+                    }
+                    className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
+                  >
+                    {copiedId === 'widget-embed' ? (
+                      <Check className="h-4 w-4 text-success-400" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </button>
+                  <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
+                    <code>{`<iframe
+  src="https://api.multando.com/api/v1/widget/reports-map?city_id=1&primary_color=0066cc&height=500"
+  width="100%" height="500" frameborder="0" allow="geolocation"></iframe>`}</code>
+                  </pre>
+                </div>
+              </div>
+
+              {/* Live preview */}
+              <div>
+                <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                  {t('developers.widget_preview_title')}
+                </h3>
+                <div className="overflow-hidden rounded-xl border border-surface-200 shadow-sm dark:border-surface-700">
+                  <iframe
+                    src="https://api.multando.com/api/v1/widget/reports-map?primary_color=e63946&height=500&locale=es"
+                    width="100%"
+                    height={500}
+                    style={{ border: 0, display: 'block' }}
+                    allow="geolocation"
+                    title="Multando reports map widget preview"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+
+              {/* Config options */}
+              <div>
+                <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                  {t('developers.widget_config_title')}
+                </h3>
+                <div className="overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700">
+                  <table className="w-full text-sm">
+                    <thead className="bg-white dark:bg-surface-900">
+                      <tr className="text-left text-xs font-semibold uppercase tracking-wider text-surface-500">
+                        <th className="px-4 py-3">Param</th>
+                        <th className="px-4 py-3">Type</th>
+                        <th className="px-4 py-3">Default</th>
+                        <th className="px-4 py-3">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-surface-100 dark:divide-surface-700">
+                      {[
+                        { name: 'city_id', type: 'int', def: '—', desc: 'Filter by city' },
+                        { name: 'status', type: 'string', def: 'approved,community_verified', desc: 'Comma-separated statuses' },
+                        { name: 'primary_color', type: 'hex', def: 'e63946', desc: 'Accent color (no #)' },
+                        { name: 'lat', type: 'float', def: '4.7110', desc: 'Initial center latitude' },
+                        { name: 'lon', type: 'float', def: '-74.0721', desc: 'Initial center longitude' },
+                        { name: 'zoom', type: 'int', def: '12', desc: 'Initial zoom (1-20)' },
+                        { name: 'height', type: 'px', def: '500', desc: 'Map height in pixels' },
+                        { name: 'show_legend', type: 'bool', def: 'true', desc: 'Show status legend' },
+                        { name: 'locale', type: 'es|en', def: 'es', desc: 'UI locale' },
+                        { name: 'limit', type: 'int', def: '500', desc: 'Max markers (1-5000)' },
+                        { name: 'cluster', type: 'bool', def: 'true', desc: 'Cluster markers' },
+                      ].map((p) => (
+                        <tr key={p.name} className="bg-white dark:bg-surface-900">
+                          <td className="px-4 py-3 font-mono text-brand-600 dark:text-brand-400">{p.name}</td>
+                          <td className="px-4 py-3 font-mono text-xs text-surface-500">{p.type}</td>
+                          <td className="px-4 py-3 font-mono text-xs text-surface-500">{p.def}</td>
+                          <td className="px-4 py-3 text-surface-700 dark:text-surface-300">{p.desc}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Color schemes */}
+              <div>
+                <h3 className="mb-3 flex items-center gap-2 font-semibold text-surface-900 dark:text-white">
+                  <Palette className="h-4 w-4" />
+                  {t('developers.widget_color_schemes')}
+                </h3>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  {[
+                    { key: 'developers.widget_scheme_bogota', color: 'f59e0b', hex: '#f59e0b' },
+                    { key: 'developers.widget_scheme_medellin', color: '0066cc', hex: '#0066cc' },
+                    { key: 'developers.widget_scheme_cali', color: 'e63946', hex: '#e63946' },
+                  ].map((s) => (
+                    <div
+                      key={s.color}
+                      className="rounded-xl border border-surface-200 bg-white p-4 dark:border-surface-700 dark:bg-surface-900"
+                      style={{ borderLeftWidth: 4, borderLeftColor: s.hex }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="inline-block h-6 w-6 rounded-md"
+                          style={{ background: s.hex }}
+                        />
+                        <div>
+                          <p className="text-sm font-semibold text-surface-900 dark:text-white">
+                            {t(s.key)}
+                          </p>
+                          <code className="text-xs text-surface-500">?primary_color={s.color}</code>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-accent-200 bg-accent-50 p-4 dark:border-accent-800 dark:bg-accent-950/30">
+                <p className="text-sm text-accent-800 dark:text-accent-200">
+                  {t('developers.widget_branding_note')}
+                </p>
               </div>
             </div>
           </div>
