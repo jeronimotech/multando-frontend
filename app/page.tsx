@@ -137,18 +137,26 @@ export default function HomePage() {
                     />
                   </div>
                 </div>
-                <div className="mt-4 flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-sm">
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-sm">
                     <span className="flex items-center gap-1.5">
-                      <span className="h-3 w-3 rounded-full bg-amber-500" />
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ background: '#10b981' }} />
+                      <span className="text-surface-600 dark:text-surface-400">{t('landing.map_approved')}</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ background: '#3b82f6' }} />
+                      <span className="text-surface-600 dark:text-surface-400">{t('landing.map_community_verified')}</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ background: '#f59e0b' }} />
+                      <span className="text-surface-600 dark:text-surface-400">{t('landing.map_authority_review')}</span>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ background: '#94a3b8' }} />
                       <span className="text-surface-600 dark:text-surface-400">{t('landing.map_pending')}</span>
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <span className="h-3 w-3 rounded-full bg-success-500" />
-                      <span className="text-surface-600 dark:text-surface-400">{t('landing.map_verified')}</span>
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <span className="h-3 w-3 rounded-full bg-danger-500" />
+                      <span className="h-2.5 w-2.5 rounded-full" style={{ background: '#ef4444' }} />
                       <span className="text-surface-600 dark:text-surface-400">{t('landing.map_rejected')}</span>
                     </span>
                   </div>

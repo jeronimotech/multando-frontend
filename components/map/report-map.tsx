@@ -31,13 +31,18 @@ export interface ReportMapProps {
 }
 
 // Custom marker icons by status — Multando hand pin
+// Colors aligned with widget legend.
+const STATUS_COLORS: Record<string, string> = {
+  pending: '#94a3b8',             // Gray-blue
+  community_verified: '#3b82f6',  // Blue
+  authority_review: '#f59e0b',    // Amber
+  approved: '#10b981',            // Green
+  verified: '#10b981',            // Legacy green
+  rejected: '#ef4444',            // Red
+};
+
 const createMarkerIcon = (status: ReportMarker['status']): L.DivIcon => {
-  const colors = {
-    pending: '#f59e0b',  // Amber
-    verified: '#22c55e', // Green
-    rejected: '#ef4444', // Red
-  };
-  const color = colors[status];
+  const color = STATUS_COLORS[status] || '#64748b';
 
   // Hand-shaped pin with camera lens, tinted by status
   return L.divIcon({

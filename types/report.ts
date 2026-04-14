@@ -9,7 +9,13 @@ export type VehicleType =
   | 'other';
 
 // Report status
-export type ReportStatus = 'pending' | 'verified' | 'rejected';
+export type ReportStatus =
+  | 'pending'
+  | 'community_verified'
+  | 'authority_review'
+  | 'approved'
+  | 'verified' // legacy
+  | 'rejected';
 
 // Infraction types
 export interface Infraction {
