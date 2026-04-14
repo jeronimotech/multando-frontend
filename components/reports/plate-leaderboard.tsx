@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Trophy, MapPin, ChevronRight, Info } from 'lucide-react';
+import { BarChart3, MapPin, ChevronRight, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from '@/lib/date-utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -24,11 +24,8 @@ interface PlateLeaderboardProps {
   className?: string;
 }
 
-function positionBadge(index: number): { emoji: string | null; label: string } {
-  if (index === 0) return { emoji: '🥇', label: '#1' };
-  if (index === 1) return { emoji: '🥈', label: '#2' };
-  if (index === 2) return { emoji: '🥉', label: '#3' };
-  return { emoji: null, label: `#${index + 1}` };
+function positionBadge(index: number): { label: string } {
+  return { label: `#${index + 1}` };
 }
 
 export function PlateLeaderboard({
@@ -60,7 +57,7 @@ export function PlateLeaderboard({
       {showHeader && (
         <div className="mx-auto mb-8 max-w-2xl text-center">
           <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full bg-brand-50 px-4 py-1.5 text-sm font-medium text-brand-600 dark:bg-brand-950/30 dark:text-brand-400">
-            <Trophy className="h-4 w-4" />
+            <BarChart3 className="h-4 w-4" />
             {t('landing.leaderboard_badge')}
           </div>
           <h2 className="text-3xl font-bold tracking-tight text-surface-900 dark:text-white sm:text-4xl">
@@ -144,7 +141,7 @@ interface LeaderboardRowProps {
 }
 
 function LeaderboardRow({ entry, index, extended, t }: LeaderboardRowProps) {
-  const { emoji, label } = positionBadge(index);
+  const { label } = positionBadge(index);
   const isTop3 = index < 3;
 
   return (
@@ -152,21 +149,22 @@ function LeaderboardRow({ entry, index, extended, t }: LeaderboardRowProps) {
       className={cn(
         'flex flex-col gap-3 px-4 py-4 transition-colors sm:flex-row sm:items-center sm:gap-4 sm:px-6',
         isTop3
-          ? 'bg-gradient-to-r from-brand-50/60 to-transparent dark:from-brand-950/20'
+          ? 'bg-gradient-to-r from-brand-50/40 to-transparent dark:from-brand-950/15'
           : 'hover:bg-surface-50 dark:hover:bg-surface-800/50'
       )}
     >
       {/* Position */}
       <div className="flex w-16 shrink-0 items-center gap-1">
-        {emoji ? (
-          <span className="text-2xl leading-none" aria-hidden="true">
-            {emoji}
-          </span>
-        ) : (
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-surface-100 text-xs font-semibold text-surface-600 dark:bg-surface-800 dark:text-surface-300">
-            {label}
-          </span>
-        )}
+        <span
+          className={cn(
+            'inline-flex h-8 min-w-[2.25rem] items-center justify-center rounded-full px-2 text-xs font-semibold tabular-nums',
+            isTop3
+              ? 'bg-brand-100 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300'
+              : 'bg-surface-100 text-surface-600 dark:bg-surface-800 dark:text-surface-300'
+          )}
+        >
+          {label}
+        </span>
       </div>
 
       {/* Masked plate with tooltip */}
@@ -243,7 +241,7 @@ function LeaderboardSkeleton({ rows, extended }: { rows: number; extended: boole
 function EmptyState({ message }: { message: string }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 px-6 py-16 text-center">
-      <Trophy className="h-10 w-10 text-surface-300 dark:text-surface-600" />
+      <BarChart3 className="h-10 w-10 text-surface-300 dark:text-surface-600" />
       <p className="text-sm text-surface-500 dark:text-surface-400">{message}</p>
     </div>
   );

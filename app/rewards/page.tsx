@@ -22,6 +22,7 @@ import {
   Crown,
   Flame,
   ArrowRight,
+  Info,
 } from 'lucide-react';
 
 export default function RewardsPage() {
@@ -332,6 +333,34 @@ export default function RewardsPage() {
                   </div>
                 </CardContent>
               </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* Responsible reporting note */}
+        <section className="border-t border-surface-200 py-12 dark:border-surface-700">
+          <div className="container-app">
+            <div className="mx-auto max-w-3xl rounded-2xl border border-surface-200 bg-surface-50 p-6 dark:border-surface-700 dark:bg-surface-800/50">
+              <div className="flex items-start gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400">
+                  <Info className="h-5 w-5" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-surface-900 dark:text-white">
+                    {t('landing.responsible_reporting')}
+                  </p>
+                  <p className="mt-1 text-sm text-surface-600 dark:text-surface-300">
+                    {t('landing.responsible_reporting_desc')}
+                  </p>
+                  <Link
+                    href="/principles"
+                    className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300"
+                  >
+                    {t('landing.responsible_reporting_link')}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </section>

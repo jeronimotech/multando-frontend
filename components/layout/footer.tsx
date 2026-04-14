@@ -13,6 +13,8 @@ const footerLinks = {
     { key: "security", href: "/security-policy" },
   ],
   company: [
+    { key: "transparency", href: "/transparency" },
+    { key: "principles", href: "/principles" },
     { key: "about", href: "/about" },
     { key: "contact", href: "/contact" },
     { key: "blog", href: "/blog" },

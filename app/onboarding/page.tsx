@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Camera, Coins, Trophy } from "lucide-react";
+import { Camera, Coins, Trophy, Scale } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { OnboardingStep } from "@/components/onboarding/onboarding-step";
 import { useTranslation } from "@/hooks/use-translation";
@@ -134,6 +135,15 @@ export default function OnboardingPage() {
         >
           {isLastStep ? t('onboarding.get_started') : t('onboarding.next')}
         </button>
+
+        {/* Principles nod */}
+        <Link
+          href="/principles"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-surface-500 transition-colors hover:text-brand-500 dark:text-surface-400"
+        >
+          <Scale className="h-3.5 w-3.5" />
+          {t('principles.onboarding_nod')}
+        </Link>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { PlateLeaderboard } from '@/components/reports/plate-leaderboard';
 import { useTranslation } from '@/hooks/use-translation';
-import { Trophy } from 'lucide-react';
+import { BarChart3 } from 'lucide-react';
 
 // Static list of supported cities — matches the landing page list.
 // Each city maps to a backend city_id. Leave `id` undefined for "all cities".
@@ -37,7 +37,7 @@ export default function PublicLeaderboardPage() {
           <div className="container-app">
             <div className="mx-auto max-w-3xl text-center">
               <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full bg-brand-100 px-4 py-1.5 text-sm font-medium text-brand-700 dark:bg-brand-950/40 dark:text-brand-300">
-                <Trophy className="h-4 w-4" />
+                <BarChart3 className="h-4 w-4" />
                 {t('landing.leaderboard_badge')}
               </div>
               <h1 className="text-4xl font-bold tracking-tight text-surface-900 dark:text-white sm:text-5xl">

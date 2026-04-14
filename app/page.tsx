@@ -53,11 +53,10 @@ export default function HomePage() {
           <div className="container-app">
             <div className="mx-auto max-w-2xl text-center">
               <h1 className="text-4xl font-bold tracking-tight text-surface-900 dark:text-white sm:text-6xl">
-                Report Infractions,{' '}
-                <span className="text-brand-500">Earn Rewards</span>
+                {t('landing.hero_safety_title')}
               </h1>
               <p className="mt-6 text-lg leading-8 text-surface-600 dark:text-surface-300">
-                {t('landing.hero_subtitle')}
+                {t('landing.hero_safety_subtitle')}
               </p>
               <div className="mt-10 flex items-center justify-center gap-x-4">
                 <Link href="/register">
