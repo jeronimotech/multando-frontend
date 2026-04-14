@@ -1,23 +1,25 @@
+'use client';
+
 import Link from "next/link";
+import { useTranslation } from "@/hooks/use-translation";
 
 const footerLinks = {
   product: [
-    { name: "How It Works", href: "#learn-more" },
-    { name: "Report Infraction", href: "/reports/new" },
-    { name: "Rewards", href: "/rewards" },
-    { name: "Developers", href: "/developers" },
-    { name: "API Docs", href: "/docs" },
+    { key: "how_it_works", href: "/#learn-more" },
+    { key: "leaderboard", href: "/leaderboard" },
+    { key: "developers", href: "/developers" },
+    { key: "security", href: "/security-policy" },
   ],
   company: [
-    { name: "About", href: "/about" },
-    { name: "Blog", href: "/blog" },
-    { name: "Careers", href: "/careers" },
-    { name: "Contact", href: "/contact" },
+    { key: "about", href: "/about" },
+    { key: "contact", href: "/contact" },
+    { key: "blog", href: "/blog" },
+    { key: "careers", href: "/careers" },
   ],
   legal: [
-    { name: "Privacy Policy", href: "/privacy" },
-    { name: "Terms of Service", href: "/terms" },
-    { name: "Cookie Policy", href: "/cookies" },
+    { key: "privacy", href: "/privacy" },
+    { key: "terms", href: "/terms" },
+    { key: "cookies", href: "/cookies" },
   ],
   social: [
     { name: "Twitter", href: "https://twitter.com/multando", icon: TwitterIcon },
@@ -27,6 +29,8 @@ const footerLinks = {
 };
 
 export function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="border-t border-surface-200 bg-surface-50 dark:border-surface-700 dark:bg-surface-800">
       <div className="container-app py-12">
@@ -37,8 +41,7 @@ export function Footer() {
               <span className="text-xl font-bold text-brand-500 flex items-center gap-2"><span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-surface-900 dark:bg-surface-700"><img src="/logo.png" alt="Multando" className="h-6 w-6" /></span>Multando</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm text-surface-600 dark:text-surface-300">
-              Report traffic infractions, earn rewards, and help make roads safer
-              for everyone in your community.
+              {t('footer.tagline')}
             </p>
             {/* Social Links */}
             <div className="mt-6 flex gap-4">
@@ -60,16 +63,16 @@ export function Footer() {
           {/* Product Links */}
           <div>
             <h3 className="text-sm font-semibold text-surface-900 dark:text-white">
-              Product
+              {t('footer.product')}
             </h3>
             <ul className="mt-4 space-y-3">
               {footerLinks.product.map((link) => (
-                <li key={link.name}>
+                <li key={link.key}>
                   <Link
                     href={link.href}
                     className="text-sm text-surface-600 transition-colors hover:text-surface-900 dark:text-surface-300 dark:hover:text-white"
                   >
-                    {link.name}
+                    {t(`footer.links.${link.key}`)}
                   </Link>
                 </li>
               ))}
@@ -79,16 +82,16 @@ export function Footer() {
           {/* Company Links */}
           <div>
             <h3 className="text-sm font-semibold text-surface-900 dark:text-white">
-              Company
+              {t('footer.company')}
             </h3>
             <ul className="mt-4 space-y-3">
               {footerLinks.company.map((link) => (
-                <li key={link.name}>
+                <li key={link.key}>
                   <Link
                     href={link.href}
                     className="text-sm text-surface-600 transition-colors hover:text-surface-900 dark:text-surface-300 dark:hover:text-white"
                   >
-                    {link.name}
+                    {t(`footer.links.${link.key}`)}
                   </Link>
                 </li>
               ))}
@@ -98,16 +101,16 @@ export function Footer() {
           {/* Legal Links */}
           <div>
             <h3 className="text-sm font-semibold text-surface-900 dark:text-white">
-              Legal
+              {t('footer.legal')}
             </h3>
             <ul className="mt-4 space-y-3">
               {footerLinks.legal.map((link) => (
-                <li key={link.name}>
+                <li key={link.key}>
                   <Link
                     href={link.href}
                     className="text-sm text-surface-600 transition-colors hover:text-surface-900 dark:text-surface-300 dark:hover:text-white"
                   >
-                    {link.name}
+                    {t(`footer.links.${link.key}`)}
                   </Link>
                 </li>
               ))}
@@ -118,7 +121,7 @@ export function Footer() {
         {/* Copyright */}
         <div className="mt-12 border-t border-surface-200 pt-8 dark:border-surface-700">
           <p className="text-center text-sm text-surface-500 dark:text-surface-400">
-            &copy; {new Date().getFullYear()} Multando. All rights reserved.
+            &copy; {new Date().getFullYear()} Multando. {t('footer.rights_reserved')}
           </p>
         </div>
       </div>
