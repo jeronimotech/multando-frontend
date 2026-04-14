@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/hooks/use-translation';
+import { useDataMode } from '@/hooks/use-api-base-url';
+import { SandboxBanner } from '@/components/layout/sandbox-banner';
 import {
   Code2,
   Terminal,
@@ -280,6 +282,9 @@ export default function DevelopersPage() {
   const [activeExample, setActiveExample] = useState<string>('init');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>('Reports');
+  const { baseUrl } = useDataMode();
+  // Host for widget iframes — strip the /api/v1 suffix since widget URLs include it.
+  const widgetHost = baseUrl.replace(/\/api\/v1$/, '');
 
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -293,6 +298,7 @@ export default function DevelopersPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
+      <SandboxBanner />
 
       <main className="flex-1">
         {/* Hero */}
@@ -616,7 +622,7 @@ export default function DevelopersPage() {
 
               <div className="text-center">
                 <a
-                  href="https://api.multando.com/api/v1/widget/reports-map?height=500"
+                  href={`${widgetHost}/api/v1/widget/reports-map?height=500`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-sm font-medium text-brand-500 hover:text-brand-600"
@@ -683,7 +689,8 @@ export default function DevelopersPage() {
                 </h3>
                 <div className="overflow-hidden rounded-xl border border-surface-200 shadow-sm dark:border-surface-700">
                   <iframe
-                    src="https://api.multando.com/api/v1/widget/reports-map?primary_color=e63946&height=500&locale=es"
+                    key={`widget-preview-${widgetHost}`}
+                    src={`${widgetHost}/api/v1/widget/reports-map?primary_color=e63946&height=500&locale=es`}
                     width="100%"
                     height={500}
                     style={{ border: 0, display: 'block' }}
@@ -725,7 +732,8 @@ export default function DevelopersPage() {
                 </div>
                 <div className="mt-4 overflow-hidden rounded-xl border border-surface-200 shadow-sm dark:border-surface-700">
                   <iframe
-                    src="https://api.multando.com/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=0066cc&height=560&locale=es"
+                    key={`widget-tabs-${widgetHost}`}
+                    src={`${widgetHost}/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=0066cc&height=560&locale=es`}
                     width="100%"
                     height={560}
                     style={{ border: 0, display: 'block' }}

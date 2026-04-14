@@ -122,10 +122,10 @@ export function PlateLeaderboard({
       </div>
 
       {showViewAll && (
-        <div className="mt-6 flex items-center justify-center">
+        <div className="mt-8 flex items-center justify-center">
           <Link
             href="/leaderboard"
-            className="inline-flex items-center gap-1 text-sm font-medium text-brand-500 hover:text-brand-700"
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-brand-600 hover:shadow-lg"
           >
             {t('landing.leaderboard_see_full')}
             <ChevronRight className="h-4 w-4" />

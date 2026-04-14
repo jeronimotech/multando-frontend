@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { DataModeToggle } from "@/components/ui/data-mode-toggle";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
@@ -50,6 +51,7 @@ export function Header() {
 
           {/* Desktop Auth Buttons & Language */}
           <div className="hidden items-center gap-3 md:flex">
+            <DataModeToggle />
             <LanguageSwitcher />
             <Link href="/login">
               <Button variant="ghost">{t('auth.sign_in')}</Button>
@@ -61,6 +63,7 @@ export function Header() {
 
           {/* Mobile Menu Button */}
           <div className="flex items-center gap-2 md:hidden">
+            <DataModeToggle compact />
             <LanguageSwitcher />
             <button
               type="button"

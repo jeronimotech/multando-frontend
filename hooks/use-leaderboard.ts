@@ -2,6 +2,27 @@
 
 import { useQuery } from '@tanstack/react-query';
 import api, { authorityApi } from '@/lib/api';
+import { useDataMode } from '@/hooks/use-api-base-url';
+
+/**
+ * Fetch a public endpoint using the user-selected data mode (production/sandbox).
+ * No auth headers — public endpoints only.
+ */
+async function fetchPublic<T>(baseUrl: string, path: string): Promise<T> {
+  const res = await fetch(`${baseUrl}${path}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) {
+    const contentType = res.headers.get('content-type');
+    const isJson = contentType?.includes('application/json');
+    const error = isJson
+      ? await res.json()
+      : { message: res.statusText || 'An error occurred', statusCode: res.status };
+    throw error;
+  }
+  return res.json() as Promise<T>;
+}
 
 export type LeaderboardPeriod = 'all' | 'month' | 'week';
 
@@ -67,12 +88,16 @@ export function usePlateLeaderboard(filters: LeaderboardFilters = {}) {
     period: filters.period ?? 'all',
     limit: filters.limit ?? 20,
   };
+  const { baseUrl, mode } = useDataMode();
 
   return useQuery({
-    queryKey: leaderboardKeys.publicPlates(normalized),
+    queryKey: [...leaderboardKeys.publicPlates(normalized), mode],
     queryFn: async () => {
       const qs = buildQuery(normalized);
-      const data = await api.get<PublicPlateLeaderboardEntry[]>(`/leaderboard/plates${qs}`);
+      const data = await fetchPublic<PublicPlateLeaderboardEntry[]>(
+        baseUrl,
+        `/leaderboard/plates${qs}`
+      );
       return Array.isArray(data) ? data : [];
     },
     staleTime: 1000 * 60 * 2,

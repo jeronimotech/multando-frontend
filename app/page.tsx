@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
+import { SandboxBanner } from '@/components/layout/sandbox-banner';
 import { DynamicReportMap } from '@/components/map/dynamic-map';
 import { ReportCard, ReportCardSkeleton } from '@/components/reports/report-card';
 import { PlateLeaderboard } from '@/components/reports/plate-leaderboard';
@@ -44,6 +45,7 @@ export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
+      <SandboxBanner />
 
       <main className="flex-1">
         {/* Hero Section */}

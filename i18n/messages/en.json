@@ -1122,5 +1122,15 @@
     "value_remote_title": "Remote-friendly",
     "value_remote_content": "Work from anywhere in LATAM with flexible hours and a strong async culture.",
     "back_home": "Back to home"
+  },
+  "header": {
+    "mode_production": "Production",
+    "mode_sandbox": "Sandbox",
+    "mode_tooltip_prod": "Live citizen data",
+    "mode_tooltip_sandbox": "Demo data for testing"
+  },
+  "sandbox_banner": {
+    "viewing": "You're viewing sandbox data",
+    "switch": "Switch to production"
   }
 }

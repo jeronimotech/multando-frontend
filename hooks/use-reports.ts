@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
+import { useDataMode } from '@/hooks/use-api-base-url';
 import type {
   Report,
   ReportSummary,
@@ -112,11 +113,32 @@ const MOCK_REPORTS: ReportSummary[] = MOCK_MARKERS.map((marker) => ({
 import { USE_MOCK_DATA } from '@/lib/config';
 
 /**
+ * Fetch a public endpoint using the user-selected data mode (production/sandbox).
+ * Does NOT include auth headers — for public endpoints only.
+ */
+async function fetchPublic<T>(baseUrl: string, path: string): Promise<T> {
+  const res = await fetch(`${baseUrl}${path}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) {
+    const contentType = res.headers.get('content-type');
+    const isJson = contentType?.includes('application/json');
+    const error = isJson
+      ? await res.json()
+      : { message: res.statusText || 'An error occurred', statusCode: res.status };
+    throw error;
+  }
+  return res.json() as Promise<T>;
+}
+
+/**
  * Hook to fetch paginated reports with filters
  */
 export function useReports(filters?: ReportFilters) {
+  const { baseUrl, mode } = useDataMode();
   return useQuery({
-    queryKey: reportKeys.list(filters || {}),
+    queryKey: [...reportKeys.list(filters || {}), mode],
     queryFn: async () => {
       if (USE_MOCK_DATA) {
         // Simulate API delay
@@ -170,7 +192,7 @@ export function useReports(filters?: ReportFilters) {
         });
       }
 
-      const raw = await api.get<any>(`/reports?${params.toString()}`);
+      const raw = await fetchPublic<any>(baseUrl, `/reports?${params.toString()}`);
       // Backend returns { items, total, page, page_size } with snake_case fields
       // Frontend expects { data, pagination } with camelCase fields
       const rawItems = raw.items || raw.data || [];
@@ -271,8 +293,9 @@ export function useReport(id: string) {
  * Hook to fetch map markers
  */
 export function useReportMarkers(filters?: ReportFilters) {
+  const { baseUrl, mode } = useDataMode();
   return useQuery({
-    queryKey: reportKeys.markers(filters),
+    queryKey: [...reportKeys.markers(filters), mode],
     queryFn: async () => {
       if (USE_MOCK_DATA) {
         await new Promise((resolve) => setTimeout(resolve, 300));
@@ -302,7 +325,7 @@ export function useReportMarkers(filters?: ReportFilters) {
         });
       }
 
-      return api.get<ReportMarker[]>(`/reports/markers?${params.toString()}`);
+      return fetchPublic<ReportMarker[]>(baseUrl, `/reports/markers?${params.toString()}`);
     },
     staleTime: 1000 * 60 * 2, // 2 minutes
   });

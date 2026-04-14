@@ -1122,5 +1122,15 @@
     "value_remote_title": "Remote-friendly",
     "value_remote_content": "Trabaja desde cualquier parte de LATAM con horarios flexibles y una cultura asincrona fuerte.",
     "back_home": "Volver al inicio"
+  },
+  "header": {
+    "mode_production": "Producción",
+    "mode_sandbox": "Sandbox",
+    "mode_tooltip_prod": "Datos reales de ciudadanos",
+    "mode_tooltip_sandbox": "Datos de prueba"
+  },
+  "sandbox_banner": {
+    "viewing": "Estás viendo datos de sandbox",
+    "switch": "Cambiar a producción"
   }
 }
