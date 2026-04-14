@@ -107,12 +107,12 @@ export function ReportCard({
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-sm font-semibold text-surface-900 dark:text-white truncate">
-                    {displayPlate}
+                  <span className="font-mono text-xs text-surface-500 dark:text-surface-400 truncate">
+                    {report.shortId || report.id?.toString().slice(0, 8)}
                   </span>
                   <StatusBadge status={report.status} />
                 </div>
-                <p className="text-xs text-surface-500 dark:text-surface-400 truncate">
+                <p className="text-sm font-medium text-surface-900 dark:text-white truncate">
                   {typeof report.infraction === 'object' ? (report.infraction as any)?.name_en || (report.infraction as any)?.code : report.infraction}
                 </p>
               </div>
