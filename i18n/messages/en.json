@@ -692,8 +692,8 @@
     "leaderboard_see_full": "See full leaderboard",
     "leaderboard_city_filter": "City:",
     "leaderboard_all_cities": "All cities",
-    "leaderboard_privacy_note": "Plates are partially masked for privacy. Full plates are only visible to authorized traffic authorities.",
-    "leaderboard_plate_tooltip": "Plate masked for privacy",
+    "leaderboard_privacy_note": "Plate numbers are public record. Exact locations are withheld here to prevent plate↔location correlation — only authorized traffic authorities can view where specific plates were reported.",
+    "leaderboard_plate_tooltip": "Public plate — locations withheld",
     "leaderboard_empty": "No verified reports yet. Check back soon.",
     "leaderboard_error": "Could not load the leaderboard. Please try again."
   },

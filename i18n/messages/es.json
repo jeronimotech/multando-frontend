@@ -692,8 +692,8 @@
     "leaderboard_see_full": "Ver ranking completo",
     "leaderboard_city_filter": "Ciudad:",
     "leaderboard_all_cities": "Todas las ciudades",
-    "leaderboard_privacy_note": "Las placas se muestran parcialmente ocultas por privacidad. Solo las autoridades de transito autorizadas ven la placa completa.",
-    "leaderboard_plate_tooltip": "Placa oculta por privacidad",
+    "leaderboard_privacy_note": "Las placas son datos publicos del registro oficial. Las ubicaciones exactas se ocultan aqui para evitar correlacionar placas con lugares — solo las autoridades de transito autorizadas pueden ver donde fue reportada una placa.",
+    "leaderboard_plate_tooltip": "Placa publica — ubicaciones ocultas",
     "leaderboard_empty": "Aun no hay reportes verificados. Vuelve pronto.",
     "leaderboard_error": "No se pudo cargar el ranking. Intentalo de nuevo."
   },
