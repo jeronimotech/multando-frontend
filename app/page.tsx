@@ -14,7 +14,7 @@ import { useTranslation } from '@/hooks/use-translation';
 
 export default function HomePage() {
   const { data: markers = [], isLoading: markersLoading } = useReportMarkers();
-  const { data: reportsData, isLoading: reportsLoading } = useReports({ limit: 4 });
+  const { data: reportsData, isLoading: reportsLoading } = useReports({ limit: 20 });
   const { t } = useTranslation();
 
   const recentReports = reportsData?.data || [];
@@ -175,7 +175,7 @@ export default function HomePage() {
                     {t('landing.see_all')}
                   </Link>
                 </div>
-                <div className="space-y-3">
+                <div className="max-h-[500px] space-y-3 overflow-y-auto pr-1 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-surface-300 dark:[&::-webkit-scrollbar-thumb]:bg-surface-600">
                   {reportsLoading ? (
                     <>
                       <ReportCardSkeleton compact />
