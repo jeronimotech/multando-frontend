@@ -9,7 +9,7 @@ const PROTECTED_ROUTES = [
   '/achievements',
   '/profile',
   '/verify',
-  '/rewards',
+  '/my-rewards',
 ];
 
 // Routes that should redirect to dashboard if already logged in
