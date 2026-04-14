@@ -651,7 +651,7 @@ export default function DevelopersPage() {
             </div>
 
             <div className="mx-auto max-w-4xl space-y-8">
-              {/* Embed code */}
+              {/* Single widget example: map + leaderboard tabs with icons */}
               <div>
                 <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
                   {t('developers.widget_embed_title')}
@@ -661,57 +661,7 @@ export default function DevelopersPage() {
                     onClick={() =>
                       copyToClipboard(
                         `<iframe
-  src="https://api.multando.com/api/v1/widget/reports-map?city_id=1&primary_color=0066cc&height=500"
-  width="100%" height="500" frameborder="0" allow="geolocation"></iframe>`,
-                        'widget-embed'
-                      )
-                    }
-                    className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
-                  >
-                    {copiedId === 'widget-embed' ? (
-                      <Check className="h-4 w-4 text-success-400" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </button>
-                  <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
-                    <code>{`<iframe
-  src="https://api.multando.com/api/v1/widget/reports-map?city_id=1&primary_color=0066cc&height=500"
-  width="100%" height="500" frameborder="0" allow="geolocation"></iframe>`}</code>
-                  </pre>
-                </div>
-              </div>
-
-              {/* Live preview */}
-              <div>
-                <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
-                  {t('developers.widget_preview_title')}
-                </h3>
-                <div className="overflow-hidden rounded-xl border border-surface-200 shadow-sm dark:border-surface-700">
-                  <iframe
-                    key={`widget-preview-${widgetHost}`}
-                    src={`${widgetHost}/api/v1/widget/reports-map?primary_color=e63946&height=500&locale=es`}
-                    width="100%"
-                    height={500}
-                    style={{ border: 0, display: 'block' }}
-                    allow="geolocation"
-                    title="Multando reports map widget preview"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-
-              {/* Map + Leaderboard tabs example */}
-              <div>
-                <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
-                  Map + Leaderboard tabs
-                </h3>
-                <div className="relative rounded-xl bg-surface-900 p-5 dark:bg-surface-950">
-                  <button
-                    onClick={() =>
-                      copyToClipboard(
-                        `<iframe
-  src="https://api.multando.com/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=0066cc&height=560"
+  src="https://api.multando.com/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true"
   width="100%" height="560" frameborder="0" allow="geolocation"></iframe>`,
                         'widget-embed-tabs'
                       )
@@ -726,14 +676,14 @@ export default function DevelopersPage() {
                   </button>
                   <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
                     <code>{`<iframe
-  src="https://api.multando.com/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=0066cc&height=560"
+  src="https://api.multando.com/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true"
   width="100%" height="560" frameborder="0" allow="geolocation"></iframe>`}</code>
                   </pre>
                 </div>
                 <div className="mt-4 overflow-hidden rounded-xl border border-surface-200 shadow-sm dark:border-surface-700">
                   <iframe
                     key={`widget-tabs-${widgetHost}`}
-                    src={`${widgetHost}/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=0066cc&height=560&locale=es`}
+                    src={`${widgetHost}/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true&locale=es`}
                     width="100%"
                     height={560}
                     style={{ border: 0, display: 'block' }}
@@ -772,6 +722,7 @@ export default function DevelopersPage() {
                         { name: 'locale', type: 'es|en', def: 'es', desc: 'UI locale' },
                         { name: 'limit', type: 'int', def: '500', desc: 'Max markers (1-5000)' },
                         { name: 'cluster', type: 'bool', def: 'true', desc: 'Cluster markers' },
+                        { name: 'use_icons', type: 'bool', def: 'false', desc: 'Use Multando hand-pin icons instead of plain dots' },
                         { name: 'tabs', type: 'string', def: 'map', desc: 'Panels to show: map, leaderboard, or map,leaderboard' },
                         { name: 'default_tab', type: 'map|leaderboard', def: 'map', desc: 'Tab selected on load (when multiple)' },
                       ].map((p) => (
