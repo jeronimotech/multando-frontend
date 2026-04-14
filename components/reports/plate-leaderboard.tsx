@@ -110,7 +110,7 @@ export function PlateLeaderboard({
           <ul role="list" className="divide-y divide-surface-100 dark:divide-surface-800">
             {data.slice(0, limit).map((entry, idx) => (
               <LeaderboardRow
-                key={`${entry.plate_masked}-${idx}`}
+                key={`${entry.plate}-${idx}`}
                 entry={entry}
                 index={idx}
                 extended={extended}
@@ -173,13 +173,12 @@ function LeaderboardRow({ entry, index, extended, t }: LeaderboardRowProps) {
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-wrap items-center gap-2">
           <span
-            title={t('landing.leaderboard_plate_tooltip')}
             className={cn(
               'inline-flex items-center rounded-md border border-surface-200 bg-surface-50 px-2.5 py-1 font-mono text-base font-bold tracking-wider text-surface-900 dark:border-surface-700 dark:bg-surface-800 dark:text-white',
               isTop3 && 'border-brand-200 bg-white dark:border-brand-900 dark:bg-surface-900'
             )}
           >
-            {entry.plate_masked}
+            {entry.plate}
           </span>
           {entry.top_infraction && (
             <span className="inline-flex items-center rounded-full bg-surface-100 px-2.5 py-0.5 text-xs font-medium text-surface-700 dark:bg-surface-800 dark:text-surface-300">

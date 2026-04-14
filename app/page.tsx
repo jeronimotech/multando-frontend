@@ -183,7 +183,7 @@ export default function HomePage() {
                     </>
                   ) : recentReports.length > 0 ? (
                     recentReports.map((report) => (
-                      <ReportCard key={report.id} report={report} compact maskPlate />
+                      <ReportCard key={report.id} report={report} compact />
                     ))
                   ) : (
                     <div className="rounded-lg border border-dashed border-surface-300 p-8 text-center dark:border-surface-600">

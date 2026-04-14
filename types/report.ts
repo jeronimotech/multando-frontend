@@ -79,7 +79,9 @@ export interface ReportMarker {
   latitude: number;
   longitude: number;
   infraction: string;
-  vehiclePlate: string;
+  // vehiclePlate is intentionally omitted on public markers to prevent
+  // correlating specific plates with specific locations.
+  vehiclePlate?: string;
   status: ReportStatus;
   createdAt: string;
 }

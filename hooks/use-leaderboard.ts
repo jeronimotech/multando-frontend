@@ -6,7 +6,7 @@ import api, { authorityApi } from '@/lib/api';
 export type LeaderboardPeriod = 'all' | 'month' | 'week';
 
 export interface PublicPlateLeaderboardEntry {
-  plate_masked: string;
+  plate: string;
   verified_reports: number;
   last_reported_at: string;
   top_infraction: string | null;
