@@ -5,12 +5,14 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useAuthorityAuth } from "@/hooks/use-authority-auth";
+import { useReviewQueueCount } from "@/hooks/use-authority-review";
 import {
   LayoutDashboard,
   FileText,
   BarChart3,
   Settings,
   ShieldCheck,
+  ClipboardCheck,
   Bell,
   LogOut,
   Copy,
@@ -22,8 +24,21 @@ import {
   Trophy,
 } from "lucide-react";
 
-const navigation = [
+type NavItem = {
+  name: string;
+  href: string;
+  icon: typeof LayoutDashboard;
+  badgeKey?: "review";
+};
+
+const navigation: NavItem[] = [
   { name: "Dashboard", href: "/authority/dashboard", icon: LayoutDashboard },
+  {
+    name: "Review Queue",
+    href: "/authority/review",
+    icon: ClipboardCheck,
+    badgeKey: "review",
+  },
   { name: "Reports", href: "/authority/reports", icon: FileText },
   { name: "Analytics", href: "/authority/analytics", icon: BarChart3 },
   { name: "Leaderboard", href: "/authority/leaderboard", icon: Trophy },
@@ -42,6 +57,9 @@ export default function AuthorityLayout({
   const { authority, isAuthenticated, isLoading, logout, maskedApiKey } =
     useAuthorityAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const reviewPendingCount = useReviewQueueCount({
+    enabled: isAuthenticated && !pathname.includes("/authority/login"),
+  });
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated && !pathname.includes("/authority/login")) {
@@ -124,6 +142,8 @@ export default function AuthorityLayout({
           <ul className="space-y-1">
             {navigation.map((item) => {
               const active = isActive(item.href);
+              const badgeCount =
+                item.badgeKey === "review" ? reviewPendingCount : 0;
               return (
                 <li key={item.name}>
                   <Link
@@ -137,7 +157,19 @@ export default function AuthorityLayout({
                     )}
                   >
                     <item.icon className="h-5 w-5" />
-                    {item.name}
+                    <span className="flex-1">{item.name}</span>
+                    {badgeCount > 0 && (
+                      <span
+                        className={cn(
+                          "inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold",
+                          active
+                            ? "bg-amber-500 text-surface-900"
+                            : "bg-[#E63946] text-white"
+                        )}
+                      >
+                        {badgeCount > 99 ? "99+" : badgeCount}
+                      </span>
+                    )}
                   </Link>
                 </li>
               );
