@@ -277,7 +277,7 @@ const METHOD_COLORS: Record<string, string> = {
 };
 
 export default function DevelopersPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [activeSDK, setActiveSDK] = useState<string>('react-native');
   const [activeExample, setActiveExample] = useState<string>('init');
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -661,7 +661,7 @@ export default function DevelopersPage() {
                     onClick={() =>
                       copyToClipboard(
                         `<iframe
-  src="https://api.multando.com/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true"
+  src="https://api.multando.com/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true&lang=${locale}"
   width="100%" height="560" frameborder="0" allow="geolocation"></iframe>`,
                         'widget-embed-tabs'
                       )
@@ -676,14 +676,14 @@ export default function DevelopersPage() {
                   </button>
                   <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
                     <code>{`<iframe
-  src="https://api.multando.com/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true"
+  src="https://api.multando.com/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true&lang=${locale}"
   width="100%" height="560" frameborder="0" allow="geolocation"></iframe>`}</code>
                   </pre>
                 </div>
                 <div className="mt-4 overflow-hidden rounded-xl border border-surface-200 shadow-sm dark:border-surface-700">
                   <iframe
                     key={`widget-tabs-${widgetHost}`}
-                    src={`${widgetHost}/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true&locale=es`}
+                    src={`${widgetHost}/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true&lang=${locale}`}
                     width="100%"
                     height={560}
                     style={{ border: 0, display: 'block' }}
@@ -719,6 +719,7 @@ export default function DevelopersPage() {
                         { name: 'zoom', type: 'int', def: '12', desc: 'Initial zoom (1-20)' },
                         { name: 'height', type: 'px', def: '500', desc: 'Map height in pixels' },
                         { name: 'show_legend', type: 'bool', def: 'true', desc: 'Show status legend' },
+                        { name: 'lang', type: 'es|en', def: 'es', desc: 'UI language (alias of locale)' },
                         { name: 'locale', type: 'es|en', def: 'es', desc: 'UI locale' },
                         { name: 'limit', type: 'int', def: '500', desc: 'Max markers (1-5000)' },
                         { name: 'cluster', type: 'bool', def: 'true', desc: 'Cluster markers' },
