@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { DynamicReportMap } from '@/components/map/dynamic-map';
 import { ReportCard, ReportCardSkeleton } from '@/components/reports/report-card';
+import { PlateLeaderboard } from '@/components/reports/plate-leaderboard';
 import { useReportMarkers, useReports } from '@/hooks/use-reports';
 import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Coins, Zap, Code2, Building2, Check } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
@@ -204,6 +205,16 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Worst Drivers Leaderboard Section */}
+        <section
+          id="leaderboard-section"
+          className="border-t border-surface-200 bg-surface-50 py-16 dark:border-surface-700 dark:bg-surface-800/50 sm:py-24"
+        >
+          <div className="container-app">
+            <PlateLeaderboard limit={10} />
           </div>
         </section>
 
