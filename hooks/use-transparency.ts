@@ -115,6 +115,26 @@ export interface AuthorityPublicProfile {
   active_since: string | null;
 }
 
+export interface PublicIntegration {
+  name: string;
+  created_at: string | null;
+}
+
+/**
+ * Fetch registered third-party integrations for the landing showcase.
+ * Returns only names + creation dates (no keys or secrets).
+ * Honors sandbox/production data mode.
+ */
+export function usePublicIntegrations() {
+  const { baseUrl, mode } = useDataMode();
+  return useQuery({
+    queryKey: ['transparency', 'integrations', mode] as const,
+    queryFn: () =>
+      fetchPublic<PublicIntegration[]>(baseUrl, '/public/integrations'),
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
 export function useAuthorityPublicProfile(authorityId: number | null | undefined) {
   const { baseUrl, mode } = useDataMode();
   return useQuery({

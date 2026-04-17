@@ -11,11 +11,13 @@ import { PlateLeaderboard } from '@/components/reports/plate-leaderboard';
 import { useReportMarkers, useReports } from '@/hooks/use-reports';
 import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Coins, Zap, Code2, Building2, Check, Store, Gift, ShoppingBag, Coffee, Smartphone } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
+import { usePublicIntegrations } from '@/hooks/use-transparency';
 
 export default function HomePage() {
   const { data: markers = [], isLoading: markersLoading } = useReportMarkers();
   const { data: reportsData, isLoading: reportsLoading } = useReports({ limit: 20 });
   const { t } = useTranslation();
+  const { data: integrations = [] } = usePublicIntegrations();
 
   const recentReports = reportsData?.data || [];
 
@@ -513,68 +515,48 @@ export default function HomePage() {
             </div>
 
             <div className="mx-auto mt-12 grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                {
-                  name: 'ZPP Bogota',
-                  desc: 'Government transit enforcement integration',
-                  category: 'Government',
-                  letter: 'Z',
-                  color: 'bg-blue-600',
-                  icon: Building2,
-                },
-                {
-                  name: 'SafeRide Medellin',
-                  desc: 'Ride-sharing safety companion app',
-                  category: 'Transport',
-                  letter: 'S',
-                  color: 'bg-green-600',
-                  icon: Smartphone,
-                },
-                {
-                  name: 'CiviTech Cali',
-                  desc: 'Civic engagement platform for citizens',
-                  category: 'Civic Tech',
-                  letter: 'C',
-                  color: 'bg-purple-600',
-                  icon: Code2,
-                },
-                {
-                  name: 'TransitWatch',
-                  desc: 'Fleet management and compliance tool',
-                  category: 'Enterprise',
-                  letter: 'T',
-                  color: 'bg-orange-600',
-                  icon: Shield,
-                },
-                {
-                  name: 'MiCiudad App',
-                  desc: 'All-in-one smart city services app',
-                  category: 'Smart City',
-                  letter: 'M',
-                  color: 'bg-brand-600',
-                  icon: Building2,
-                },
-              ].map((app) => (
-                <div
-                  key={app.name}
-                  className="rounded-xl border border-surface-200 bg-white p-5 transition-all hover:border-brand-300 hover:shadow-sm dark:border-surface-700 dark:bg-surface-900"
-                >
-                  <div className="mb-3 flex items-center gap-3">
-                    <div
-                      className={`flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold text-white ${app.color}`}
-                    >
-                      {app.letter}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-surface-900 dark:text-white">{app.name}</p>
-                      <span className="inline-flex rounded-full bg-surface-100 px-2 py-0.5 text-xs font-medium text-surface-600 dark:bg-surface-700 dark:text-surface-400">
-                        {app.category}
-                      </span>
+              {(() => {
+                const colors = ['bg-blue-600', 'bg-green-600', 'bg-purple-600', 'bg-orange-600', 'bg-brand-600', 'bg-teal-600'];
+                const items = integrations.length > 0
+                  ? integrations.map((i, idx) => ({
+                      name: i.name.replace(/ - (Sandbox|Production)$/i, ''),
+                      letter: i.name.charAt(0).toUpperCase(),
+                      color: colors[idx % colors.length],
+                      since: i.created_at ? new Date(i.created_at).getFullYear().toString() : '',
+                    }))
+                  : [
+                      { name: 'ZPP Bogota', letter: 'Z', color: 'bg-blue-600', since: '2026' },
+                    ];
+                // Deduplicate by name (sandbox + production show same name)
+                const seen = new Set<string>();
+                const unique = items.filter((i) => {
+                  if (seen.has(i.name)) return false;
+                  seen.add(i.name);
+                  return true;
+                });
+                return unique.map((app) => (
+                  <div
+                    key={app.name}
+                    className="rounded-xl border border-surface-200 bg-white p-5 transition-all hover:border-brand-300 hover:shadow-sm dark:border-surface-700 dark:bg-surface-900"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-bold text-white ${app.color}`}
+                      >
+                        {app.letter}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-surface-900 dark:text-white">{app.name}</p>
+                        {app.since && (
+                          <span className="text-xs text-surface-500 dark:text-surface-400">
+                            Since {app.since}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <p className="text-sm text-surface-500 dark:text-surface-400">{app.desc}</p>
-                </div>
-              ))}
+                ));
+              })()}
             </div>
 
             <div className="mt-10 text-center">
