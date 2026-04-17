@@ -227,6 +227,72 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Responsible Reporting Principles Banner */}
+        <section className="border-t border-surface-200 bg-gradient-to-r from-brand-50 via-white to-brand-50 py-16 dark:border-surface-700 dark:from-surface-900 dark:via-surface-800 dark:to-surface-900 sm:py-24">
+          <div className="container-app">
+            <div className="grid items-center gap-10 lg:grid-cols-2">
+              <div>
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-brand-100 px-4 py-1.5 text-sm font-medium text-brand-700 dark:bg-brand-950/30 dark:text-brand-400">
+                  <Shield className="h-4 w-4" />
+                  {t('landing.responsible_reporting')}
+                </div>
+                <h2 className="text-3xl font-bold tracking-tight text-surface-900 dark:text-white sm:text-4xl">
+                  {t('principles.hero_title')}
+                </h2>
+                <p className="mt-4 text-lg text-surface-600 dark:text-surface-300">
+                  {t('landing.responsible_reporting_desc')}
+                </p>
+                <div className="mt-8">
+                  <Link href="/principles">
+                    <Button size="lg" variant="outline">
+                      <Shield className="mr-2 h-4 w-4" />
+                      {t('landing.responsible_reporting_link')}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {[
+                  {
+                    icon: '📋',
+                    titleKey: 'principles.do_1_title',
+                    descKey: 'principles.do_1_content',
+                  },
+                  {
+                    icon: '🔒',
+                    titleKey: 'principles.safeguard_anonymity_title',
+                    descKey: 'principles.safeguard_anonymity_content',
+                  },
+                  {
+                    icon: '⚖️',
+                    titleKey: 'principles.safeguard_authority_title',
+                    descKey: 'principles.safeguard_authority_content',
+                  },
+                  {
+                    icon: '🛡️',
+                    titleKey: 'principles.safeguard_rate_title',
+                    descKey: 'principles.safeguard_rate_content',
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.titleKey}
+                    className="rounded-xl border border-surface-200 bg-white p-5 shadow-sm dark:border-surface-700 dark:bg-surface-800"
+                  >
+                    <span className="text-2xl">{item.icon}</span>
+                    <h3 className="mt-2 text-sm font-semibold text-surface-900 dark:text-white">
+                      {t(item.titleKey)}
+                    </h3>
+                    <p className="mt-1 text-xs leading-relaxed text-surface-500 dark:text-surface-400">
+                      {t(item.descKey)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Built for Everyone Section */}
         <section className="border-t border-surface-200 bg-white py-16 dark:border-surface-700 dark:bg-surface-900 sm:py-24">
           <div className="container-app">

@@ -47,6 +47,12 @@ export function Header() {
             >
               {t('navigation.developers')}
             </Link>
+            <Link
+              href="/principles"
+              className="text-sm font-medium text-brand-600 transition-colors hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300"
+            >
+              {t('landing.responsible_reporting')}
+            </Link>
           </nav>
 
           {/* Desktop Auth Buttons & Language */}
@@ -62,7 +68,7 @@ export function Header() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex shrink-0 items-center gap-1.5 md:hidden">
             <DataModeToggle compact />
             <LanguageSwitcher />
             <button
@@ -116,6 +122,13 @@ export function Header() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {t('navigation.developers')}
+            </Link>
+            <Link
+              href="/principles"
+              className="block rounded-lg px-3 py-2 text-base font-medium text-brand-600 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-950/30"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {t('landing.responsible_reporting')}
             </Link>
             <div className="mt-4 flex flex-col gap-2 px-3">
               <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>

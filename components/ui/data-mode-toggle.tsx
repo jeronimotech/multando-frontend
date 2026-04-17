@@ -25,6 +25,9 @@ export function DataModeToggle({ className, compact = false }: DataModeTogglePro
 
   const isSandbox = mode === 'sandbox';
 
+  const prodLabel = t('header.mode_production');
+  const sandLabel = t('header.mode_sandbox');
+
   const segments: Array<{
     value: DataMode;
     label: string;
@@ -32,12 +35,12 @@ export function DataModeToggle({ className, compact = false }: DataModeTogglePro
   }> = [
     {
       value: 'production',
-      label: t('header.mode_production'),
+      label: compact ? prodLabel.slice(0, 4) : prodLabel,
       tooltip: t('header.mode_tooltip_prod'),
     },
     {
       value: 'sandbox',
-      label: t('header.mode_sandbox'),
+      label: compact ? sandLabel.slice(0, 4) : sandLabel,
       tooltip: t('header.mode_tooltip_sandbox'),
     },
   ];
