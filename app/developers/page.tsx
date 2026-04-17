@@ -361,6 +361,33 @@ export default function DevelopersPage() {
           </div>
         </section>
 
+        {/* API Key Management CTA */}
+        <section className="border-b border-surface-200 bg-gradient-to-r from-brand-50 via-white to-brand-50 py-10 dark:border-surface-700 dark:from-surface-900 dark:via-surface-800 dark:to-surface-900">
+          <div className="container-app">
+            <div className="flex flex-col items-center gap-6 rounded-2xl border border-brand-200 bg-white p-8 shadow-sm dark:border-brand-800 dark:bg-surface-800 sm:flex-row sm:justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-100 dark:bg-brand-950/30">
+                  <Key className="h-6 w-6 text-brand-500" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-surface-900 dark:text-white">
+                    {t('api_keys.manage_keys')}
+                  </h3>
+                  <p className="mt-0.5 text-sm text-surface-500 dark:text-surface-400">
+                    {t('api_keys.manage_keys_desc')}
+                  </p>
+                </div>
+              </div>
+              <Link href="/developers/keys">
+                <Button size="lg" leftIcon={<Key className="h-4 w-4" />}>
+                  {t('api_keys.manage_keys')}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* Quick Start */}
         <section id="quickstart" className="py-20 bg-surface-50 dark:bg-surface-800">
           <div className="container-app">

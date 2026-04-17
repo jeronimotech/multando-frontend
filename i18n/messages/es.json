@@ -794,7 +794,11 @@
     "partners_title": "Gasta tus tokens MULTA",
     "partners_desc": "Canjea tus tokens en restaurantes, tiendas y negocios locales por descuentos y productos reales.",
     "partners_cta_browse": "Ver marketplace",
-    "partners_cta_become": "Hazte socio"
+    "partners_cta_become": "Hazte socio",
+    "integrations_badge": "Integraciones",
+    "integrations_title": "Construido con Multando",
+    "integrations_desc": "Apps de terceros usando nuestro SDK para mejorar la seguridad vial",
+    "integrations_cta": "Empieza a construir"
   },
   "authority_admin": {
     "staff": "Gestion de Personal",
@@ -1349,5 +1353,32 @@
     "no_offers": "No hay ofertas disponibles por ahora",
     "no_redemptions": "Aun no has canjeado ninguna oferta",
     "insufficient_balance": "Saldo MULTA insuficiente"
+  },
+  "api_keys": {
+    "title": "Tus claves API",
+    "subtitle": "Crea y gestiona claves API para tus aplicaciones",
+    "create_new": "Crear nueva clave",
+    "form_name": "Nombre de la clave",
+    "form_name_placeholder": "ej. Mi App Produccion",
+    "form_environment": "Entorno",
+    "form_scopes": "Permisos",
+    "form_rate_limit": "Limite de tasa (req/min)",
+    "form_expires": "Expira en",
+    "expires_30": "30 dias",
+    "expires_90": "90 dias",
+    "expires_365": "1 ano",
+    "expires_never": "Nunca",
+    "create_button": "Crear clave",
+    "key_created": "Clave creada exitosamente",
+    "key_warning": "Copia esta clave ahora. No se mostrara de nuevo.",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "revoke": "Revocar",
+    "revoke_confirm": "Estas seguro? No se puede deshacer.",
+    "no_keys": "Aun no tienes claves API",
+    "status_active": "Activa",
+    "status_revoked": "Revocada",
+    "manage_keys": "Gestionar claves API",
+    "manage_keys_desc": "Crea claves sandbox y produccion para tus aplicaciones"
   }
 }

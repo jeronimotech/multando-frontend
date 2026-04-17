@@ -9,7 +9,7 @@ import { DynamicReportMap } from '@/components/map/dynamic-map';
 import { ReportCard, ReportCardSkeleton } from '@/components/reports/report-card';
 import { PlateLeaderboard } from '@/components/reports/plate-leaderboard';
 import { useReportMarkers, useReports } from '@/hooks/use-reports';
-import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Coins, Zap, Code2, Building2, Check, Store, Gift, ShoppingBag, Coffee } from 'lucide-react';
+import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Coins, Zap, Code2, Building2, Check, Store, Gift, ShoppingBag, Coffee, Smartphone } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
 
 export default function HomePage() {
@@ -490,6 +490,98 @@ export default function HomePage() {
               <Link href="/partners">
                 <Button variant="outline" size="lg">
                   {t('landing.partners_cta_become')}
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Built With Multando Section */}
+        <section className="border-t border-surface-200 bg-surface-50 py-16 dark:border-surface-700 dark:bg-surface-800 sm:py-24">
+          <div className="container-app">
+            <div className="mx-auto max-w-2xl text-center">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-brand-100 px-4 py-1.5 text-sm font-medium text-brand-700 dark:bg-brand-950/30 dark:text-brand-400">
+                <Code2 className="h-4 w-4" />
+                {t('landing.integrations_badge')}
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight text-surface-900 dark:text-white sm:text-4xl">
+                {t('landing.integrations_title')}
+              </h2>
+              <p className="mt-4 text-lg text-surface-600 dark:text-surface-300">
+                {t('landing.integrations_desc')}
+              </p>
+            </div>
+
+            <div className="mx-auto mt-12 grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[
+                {
+                  name: 'ZPP Bogota',
+                  desc: 'Government transit enforcement integration',
+                  category: 'Government',
+                  letter: 'Z',
+                  color: 'bg-blue-600',
+                  icon: Building2,
+                },
+                {
+                  name: 'SafeRide Medellin',
+                  desc: 'Ride-sharing safety companion app',
+                  category: 'Transport',
+                  letter: 'S',
+                  color: 'bg-green-600',
+                  icon: Smartphone,
+                },
+                {
+                  name: 'CiviTech Cali',
+                  desc: 'Civic engagement platform for citizens',
+                  category: 'Civic Tech',
+                  letter: 'C',
+                  color: 'bg-purple-600',
+                  icon: Code2,
+                },
+                {
+                  name: 'TransitWatch',
+                  desc: 'Fleet management and compliance tool',
+                  category: 'Enterprise',
+                  letter: 'T',
+                  color: 'bg-orange-600',
+                  icon: Shield,
+                },
+                {
+                  name: 'MiCiudad App',
+                  desc: 'All-in-one smart city services app',
+                  category: 'Smart City',
+                  letter: 'M',
+                  color: 'bg-brand-600',
+                  icon: Building2,
+                },
+              ].map((app) => (
+                <div
+                  key={app.name}
+                  className="rounded-xl border border-surface-200 bg-white p-5 transition-all hover:border-brand-300 hover:shadow-sm dark:border-surface-700 dark:bg-surface-900"
+                >
+                  <div className="mb-3 flex items-center gap-3">
+                    <div
+                      className={`flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold text-white ${app.color}`}
+                    >
+                      {app.letter}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-surface-900 dark:text-white">{app.name}</p>
+                      <span className="inline-flex rounded-full bg-surface-100 px-2 py-0.5 text-xs font-medium text-surface-600 dark:bg-surface-700 dark:text-surface-400">
+                        {app.category}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-surface-500 dark:text-surface-400">{app.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-10 text-center">
+              <Link href="/developers/keys">
+                <Button size="lg">
+                  {t('landing.integrations_cta')}
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </div>

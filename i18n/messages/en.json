@@ -794,7 +794,11 @@
     "partners_title": "Spend Your MULTA Tokens",
     "partners_desc": "Redeem your tokens at local restaurants, stores, and businesses for real discounts and products.",
     "partners_cta_browse": "Browse Marketplace",
-    "partners_cta_become": "Become a Partner"
+    "partners_cta_become": "Become a Partner",
+    "integrations_badge": "Integrations",
+    "integrations_title": "Built With Multando",
+    "integrations_desc": "Third-party apps using our SDK to improve road safety",
+    "integrations_cta": "Start Building"
   },
   "authority_admin": {
     "staff": "Staff Management",
@@ -1349,5 +1353,32 @@
     "no_offers": "No offers available right now",
     "no_redemptions": "You haven't redeemed any offers yet",
     "insufficient_balance": "Insufficient MULTA balance"
+  },
+  "api_keys": {
+    "title": "Your API Keys",
+    "subtitle": "Create and manage API keys for your applications",
+    "create_new": "Create New Key",
+    "form_name": "Key name",
+    "form_name_placeholder": "e.g. My App Production",
+    "form_environment": "Environment",
+    "form_scopes": "Permissions",
+    "form_rate_limit": "Rate limit (req/min)",
+    "form_expires": "Expires in",
+    "expires_30": "30 days",
+    "expires_90": "90 days",
+    "expires_365": "1 year",
+    "expires_never": "Never",
+    "create_button": "Create Key",
+    "key_created": "Key Created Successfully",
+    "key_warning": "Copy this key now. It will not be shown again.",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "revoke": "Revoke",
+    "revoke_confirm": "Are you sure? This cannot be undone.",
+    "no_keys": "No API keys yet",
+    "status_active": "Active",
+    "status_revoked": "Revoked",
+    "manage_keys": "Manage API Keys",
+    "manage_keys_desc": "Create sandbox and production keys for your applications"
   }
 }
