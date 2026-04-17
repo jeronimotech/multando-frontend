@@ -9,7 +9,7 @@ import { DynamicReportMap } from '@/components/map/dynamic-map';
 import { ReportCard, ReportCardSkeleton } from '@/components/reports/report-card';
 import { PlateLeaderboard } from '@/components/reports/plate-leaderboard';
 import { useReportMarkers, useReports } from '@/hooks/use-reports';
-import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Coins, Zap, Code2, Building2, Check } from 'lucide-react';
+import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Coins, Zap, Code2, Building2, Check, Store, Gift, ShoppingBag, Coffee } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
 
 export default function HomePage() {
@@ -437,6 +437,62 @@ export default function HomePage() {
             <p className="mt-6 text-center text-sm text-surface-500 dark:text-surface-400">
               {t('landing.cities_expanding')}
             </p>
+          </div>
+        </section>
+
+        {/* Partners Section */}
+        <section className="border-t border-surface-200 bg-white py-16 dark:border-surface-700 dark:bg-surface-900 sm:py-24">
+          <div className="container-app">
+            <div className="mx-auto max-w-2xl text-center">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-accent-100 px-4 py-1.5 text-sm font-medium text-accent-700 dark:bg-accent-900/30 dark:text-accent-300">
+                <Store className="h-4 w-4" />
+                {t('landing.partners_badge')}
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight text-surface-900 dark:text-white sm:text-4xl">
+                {t('landing.partners_title')}
+              </h2>
+              <p className="mt-4 text-lg text-surface-600 dark:text-surface-300">
+                {t('landing.partners_desc')}
+              </p>
+            </div>
+
+            <div className="mx-auto mt-12 grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                { icon: Coffee, name: '20% off coffee', partner: 'Cafe Seguro', cost: 50 },
+                { icon: ShoppingBag, name: '10% off accessories', partner: 'TechMart', cost: 30 },
+                { icon: Gift, name: 'Free day pass', partner: 'FitZone Gym', cost: 100 },
+                { icon: Store, name: 'Free smoothie', partner: 'Green Eats', cost: 75 },
+              ].map((item) => (
+                <div
+                  key={item.name}
+                  className="rounded-xl border border-surface-200 bg-surface-50 p-5 transition-all hover:border-brand-300 hover:shadow-sm dark:border-surface-700 dark:bg-surface-800"
+                >
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-brand-100 text-brand-600 dark:bg-brand-900/30 dark:text-brand-400">
+                    <item.icon className="h-5 w-5" />
+                  </div>
+                  <p className="text-sm font-semibold text-surface-900 dark:text-white">{item.name}</p>
+                  <p className="mt-1 text-xs text-surface-500 dark:text-surface-400">{item.partner}</p>
+                  <div className="mt-3 inline-flex items-center gap-1 rounded-full bg-accent-100 px-2.5 py-0.5 text-xs font-semibold text-accent-700 dark:bg-accent-900/30 dark:text-accent-300">
+                    <Coins className="h-3 w-3" />
+                    {item.cost} MULTA
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+              <Link href="/marketplace">
+                <Button size="lg">
+                  {t('landing.partners_cta_browse')}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/partners">
+                <Button variant="outline" size="lg">
+                  {t('landing.partners_cta_become')}
+                </Button>
+              </Link>
+            </div>
           </div>
         </section>
 

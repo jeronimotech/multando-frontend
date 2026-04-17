@@ -42,6 +42,12 @@ export function Header() {
               {t('wallet.rewards')}
             </Link>
             <Link
+              href="/marketplace"
+              className="text-sm font-medium text-surface-600 transition-colors hover:text-surface-900 dark:text-surface-300 dark:hover:text-white"
+            >
+              {t('navigation.marketplace')}
+            </Link>
+            <Link
               href="/developers"
               className="text-sm font-medium text-surface-600 transition-colors hover:text-surface-900 dark:text-surface-300 dark:hover:text-white"
             >
@@ -115,6 +121,13 @@ export function Header() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {t('wallet.rewards')}
+            </Link>
+            <Link
+              href="/marketplace"
+              className="block rounded-lg px-3 py-2 text-base font-medium text-surface-600 hover:bg-surface-100 hover:text-surface-900 dark:text-surface-300 dark:hover:bg-surface-800 dark:hover:text-white"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {t('navigation.marketplace')}
             </Link>
             <Link
               href="/developers"

@@ -8,6 +8,7 @@ const footerLinks = {
     { key: "how_it_works", href: "/#learn-more" },
     { key: "leaderboard", href: "/leaderboard" },
     { key: "rewards", href: "/rewards" },
+    { key: "marketplace", href: "/marketplace" },
     { key: "developers", href: "/developers" },
     { key: "api_docs", href: "/docs" },
     { key: "security", href: "/security-policy" },
