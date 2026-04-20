@@ -1406,6 +1406,21 @@
     "status_active": "Active",
     "status_revoked": "Revoked",
     "manage_keys": "Manage API Keys",
-    "manage_keys_desc": "Create sandbox and production keys for your applications"
+    "manage_keys_desc": "Create sandbox and production keys for your applications",
+    "selfhost_badge": "Self-Hosting",
+    "selfhost_title": "Deploy Multando on Your Infrastructure",
+    "selfhost_subtitle": "Run the entire platform on your own servers with Docker. Full control over your data, your rules.",
+    "selfhost_prereqs": "Prerequisites",
+    "selfhost_prereq_key": "An Anthropic API key (for AI chatbot)",
+    "selfhost_prereq_domain": "A domain name (optional, for production)",
+    "selfhost_step1": "Clone the repository",
+    "selfhost_step2": "Configure environment",
+    "selfhost_step2_desc": "Edit .env with your secrets. Optionally enable federation to connect to the Multando Hub.",
+    "selfhost_step3": "Start the platform",
+    "selfhost_step3_desc": "This starts PostgreSQL, Redis, MinIO, and the API server. Migrations run automatically on first boot.",
+    "selfhost_step4": "Verify it works",
+    "selfhost_step4_desc": "Check the health endpoint and open the API documentation.",
+    "selfhost_frontend_title": "Frontend (optional)",
+    "selfhost_github_cta": "View on GitHub"
   }
 }

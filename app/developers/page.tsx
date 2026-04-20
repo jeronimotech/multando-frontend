@@ -1034,6 +1034,127 @@ export default function DevelopersPage() {
           </div>
         </section>
 
+        {/* Self-Hosting Guide */}
+        <section id="self-hosting" className="border-t border-surface-200 bg-white py-16 dark:border-surface-700 dark:bg-surface-900 sm:py-24">
+          <div className="container-app">
+            <div className="mx-auto max-w-3xl">
+              <div className="mb-8 text-center">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-brand-100 px-4 py-1.5 text-sm font-medium text-brand-700 dark:bg-brand-950/30 dark:text-brand-400">
+                  <Terminal className="h-4 w-4" />
+                  {t('developers.selfhost_badge')}
+                </div>
+                <h2 className="text-3xl font-bold tracking-tight text-surface-900 dark:text-white sm:text-4xl">
+                  {t('developers.selfhost_title')}
+                </h2>
+                <p className="mt-4 text-lg text-surface-600 dark:text-surface-300">
+                  {t('developers.selfhost_subtitle')}
+                </p>
+              </div>
+
+              {/* Prerequisites */}
+              <div className="mb-8 rounded-xl border border-surface-200 bg-surface-50 p-6 dark:border-surface-700 dark:bg-surface-800">
+                <h3 className="mb-3 text-lg font-semibold text-surface-900 dark:text-white">
+                  {t('developers.selfhost_prereqs')}
+                </h3>
+                <ul className="space-y-2 text-sm text-surface-600 dark:text-surface-300">
+                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> Docker & Docker Compose</li>
+                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> {t('developers.selfhost_prereq_key')}</li>
+                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> {t('developers.selfhost_prereq_domain')}</li>
+                </ul>
+              </div>
+
+              {/* Steps */}
+              <div className="space-y-6">
+                {/* Step 1 */}
+                <div className="rounded-xl border border-surface-200 bg-white p-6 dark:border-surface-700 dark:bg-surface-800">
+                  <div className="mb-3 flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">1</span>
+                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white">{t('developers.selfhost_step1')}</h3>
+                  </div>
+                  <div className="rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
+                    <p>git clone https://github.com/jeronimotech/multando-backend.git</p>
+                    <p className="mt-1">cd multando-backend</p>
+                    <p className="mt-1">cp .env.example .env</p>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="rounded-xl border border-surface-200 bg-white p-6 dark:border-surface-700 dark:bg-surface-800">
+                  <div className="mb-3 flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">2</span>
+                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white">{t('developers.selfhost_step2')}</h3>
+                  </div>
+                  <p className="mb-3 text-sm text-surface-600 dark:text-surface-300">
+                    {t('developers.selfhost_step2_desc')}
+                  </p>
+                  <div className="rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
+                    <p># .env</p>
+                    <p>SECRET_KEY=your-secret-key-here</p>
+                    <p>ANTHROPIC_API_KEY=sk-ant-...</p>
+                    <p className="mt-1"># Optional: connect to the Multando Hub</p>
+                    <p>FEDERATION_ENABLED=true</p>
+                    <p>FEDERATION_HUB_URL=https://api.multando.com</p>
+                    <p>FEDERATION_API_KEY=your-hub-key</p>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="rounded-xl border border-surface-200 bg-white p-6 dark:border-surface-700 dark:bg-surface-800">
+                  <div className="mb-3 flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">3</span>
+                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white">{t('developers.selfhost_step3')}</h3>
+                  </div>
+                  <div className="rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
+                    <p>docker compose -f docker-compose.self-host.yml up -d</p>
+                  </div>
+                  <p className="mt-3 text-sm text-surface-600 dark:text-surface-300">
+                    {t('developers.selfhost_step3_desc')}
+                  </p>
+                </div>
+
+                {/* Step 4 */}
+                <div className="rounded-xl border border-surface-200 bg-white p-6 dark:border-surface-700 dark:bg-surface-800">
+                  <div className="mb-3 flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">4</span>
+                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white">{t('developers.selfhost_step4')}</h3>
+                  </div>
+                  <p className="text-sm text-surface-600 dark:text-surface-300">
+                    {t('developers.selfhost_step4_desc')}
+                  </p>
+                  <div className="mt-3 rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
+                    <p>curl http://localhost:8000/health</p>
+                    <p className="text-surface-400"># {`{"status":"healthy","version":"0.1.0"}`}</p>
+                    <p className="mt-2"># API docs at http://localhost:8000/docs</p>
+                    <p># Frontend at http://localhost:3000</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Frontend deploy note */}
+              <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-700/40 dark:bg-amber-950/20">
+                <h3 className="mb-2 text-sm font-semibold text-amber-800 dark:text-amber-300">{t('developers.selfhost_frontend_title')}</h3>
+                <div className="rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
+                  <p>git clone https://github.com/jeronimotech/multando-frontend.git</p>
+                  <p className="mt-1">cd multando-frontend</p>
+                  <p className="mt-1">echo &quot;NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1&quot; &gt; .env</p>
+                  <p className="mt-1">docker build -t multando-frontend .</p>
+                  <p className="mt-1">docker run -p 3000:3000 multando-frontend</p>
+                </div>
+              </div>
+
+              <div className="mt-8 text-center">
+                <a href="https://github.com/jeronimotech" target="_blank" rel="noopener noreferrer">
+                  <Button size="lg">
+                    <Code2 className="mr-2 h-4 w-4" />
+                    {t('developers.selfhost_github_cta')}
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </Button>
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* CTA */}
         <section className="bg-gradient-to-r from-brand-600 to-brand-700 py-16">
           <div className="container-app text-center">
