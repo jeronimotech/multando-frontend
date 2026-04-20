@@ -9,7 +9,7 @@ import { DynamicReportMap } from '@/components/map/dynamic-map';
 import { ReportCard, ReportCardSkeleton } from '@/components/reports/report-card';
 import { PlateLeaderboard } from '@/components/reports/plate-leaderboard';
 import { useReportMarkers, useReports } from '@/hooks/use-reports';
-import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Coins, Zap, Code2, Building2, Check, Store, Gift, ShoppingBag, Coffee, Smartphone } from 'lucide-react';
+import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Coins, Zap, Code2, Building2, Check, Store, Gift, ShoppingBag, Coffee, Smartphone, GitBranch, Server, Globe, Network } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
 import { usePublicIntegrations } from '@/hooks/use-transparency';
 
@@ -108,6 +108,38 @@ export default function HomePage() {
                   'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
               }}
             />
+          </div>
+        </section>
+
+        {/* Open Source Hero Section */}
+        <section className="bg-gradient-to-r from-surface-900 to-surface-800 py-16 sm:py-24">
+          <div className="container-app">
+            <div className="mx-auto max-w-2xl text-center">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-white">
+                <Code2 className="h-4 w-4" />
+                {t('landing.opensource_badge')}
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                {t('landing.opensource_title')}
+              </h2>
+              <p className="mt-4 text-lg text-surface-300">
+                {t('landing.opensource_subtitle')}
+              </p>
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+                <a href="https://github.com/jeronimotech" target="_blank" rel="noopener noreferrer">
+                  <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+                    <GitBranch className="mr-2 h-4 w-4" />
+                    {t('landing.opensource_cta_github')}
+                  </Button>
+                </a>
+                <Link href="/developers">
+                  <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+                    <Server className="mr-2 h-4 w-4" />
+                    {t('landing.opensource_cta_docs')}
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -398,6 +430,88 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Deployment Options Section */}
+        <section className="border-t border-surface-200 bg-white py-16 dark:border-surface-700 dark:bg-surface-900 sm:py-24">
+          <div className="container-app">
+            <div className="mx-auto mb-12 max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-surface-900 dark:text-white sm:text-4xl">
+                {t('landing.deploy_title')}
+              </h2>
+            </div>
+
+            <div className="mx-auto grid max-w-4xl gap-8 lg:grid-cols-2">
+              {/* Self-Hosted Card */}
+              <div className="rounded-xl border border-surface-200 bg-surface-50 p-8 dark:border-surface-700 dark:bg-surface-800">
+                <h3 className="text-xl font-bold text-surface-900 dark:text-white">
+                  {t('landing.deploy_selfhost')}
+                </h3>
+                <p className="mt-2 text-2xl font-bold text-brand-500">
+                  {t('landing.deploy_selfhost_price')}
+                </p>
+                <ul className="mt-6 space-y-3">
+                  {[
+                    t('landing.deploy_selfhost_f1'),
+                    t('landing.deploy_selfhost_f2'),
+                    t('landing.deploy_selfhost_f3'),
+                    t('landing.deploy_selfhost_f4'),
+                  ].map((feature) => (
+                    <li key={feature} className="flex items-center gap-3 text-surface-700 dark:text-surface-300">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-success-100 dark:bg-success-900/30">
+                        <Check className="h-3 w-3 text-success-600" />
+                      </div>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-8">
+                  <a href="https://github.com/jeronimotech" target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline" size="lg" className="w-full">
+                      <GitBranch className="mr-2 h-4 w-4" />
+                      {t('landing.opensource_cta_github')}
+                    </Button>
+                  </a>
+                </div>
+              </div>
+
+              {/* Managed Card */}
+              <div className="relative rounded-xl border-2 border-brand-500 bg-surface-50 p-8 dark:bg-surface-800">
+                <div className="absolute -top-3 right-6 rounded-full bg-brand-500 px-3 py-0.5 text-xs font-semibold text-white">
+                  Recommended
+                </div>
+                <h3 className="text-xl font-bold text-surface-900 dark:text-white">
+                  {t('landing.deploy_managed')}
+                </h3>
+                <p className="mt-2 text-2xl font-bold text-brand-500">
+                  {t('landing.deploy_managed_price')}
+                </p>
+                <ul className="mt-6 space-y-3">
+                  {[
+                    t('landing.deploy_managed_f1'),
+                    t('landing.deploy_managed_f2'),
+                    t('landing.deploy_managed_f3'),
+                    t('landing.deploy_managed_f4'),
+                  ].map((feature) => (
+                    <li key={feature} className="flex items-center gap-3 text-surface-700 dark:text-surface-300">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-success-100 dark:bg-success-900/30">
+                        <Check className="h-3 w-3 text-success-600" />
+                      </div>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-8">
+                  <Link href="/register">
+                    <Button size="lg" className="w-full">
+                      {t('landing.deploy_managed_cta')}
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Cities Section */}
         <section className="py-16 sm:py-24">
           <div className="container-app">
@@ -439,6 +553,72 @@ export default function HomePage() {
             <p className="mt-6 text-center text-sm text-surface-500 dark:text-surface-400">
               {t('landing.cities_expanding')}
             </p>
+          </div>
+        </section>
+
+        {/* Federation Section */}
+        <section className="border-t border-surface-200 bg-surface-50 py-16 dark:border-surface-700 dark:bg-surface-800 sm:py-24">
+          <div className="container-app">
+            <div className="mx-auto max-w-2xl text-center">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-brand-100 px-4 py-1.5 text-sm font-medium text-brand-700 dark:bg-brand-950/30 dark:text-brand-400">
+                <Network className="h-4 w-4" />
+                {t('landing.federation_badge')}
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight text-surface-900 dark:text-white sm:text-4xl">
+                {t('landing.federation_title')}
+              </h2>
+              <p className="mt-4 text-lg text-surface-600 dark:text-surface-300">
+                {t('landing.federation_subtitle')}
+              </p>
+            </div>
+
+            {/* Federation Diagram */}
+            <div className="mx-auto mt-12 flex max-w-3xl flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
+              <div className="flex flex-col gap-3">
+                {['City A', 'City B', 'City C'].map((city) => (
+                  <div key={city} className="flex items-center gap-2 rounded-lg border border-surface-300 bg-white px-4 py-3 dark:border-surface-600 dark:bg-surface-900">
+                    <Server className="h-4 w-4 text-surface-500" />
+                    <span className="text-sm font-medium text-surface-700 dark:text-surface-300">{city}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <div className="hidden h-px w-16 bg-brand-400 sm:block" />
+                <ArrowRight className="hidden h-5 w-5 text-brand-500 sm:block" />
+                <div className="block h-8 w-px bg-brand-400 sm:hidden" />
+              </div>
+              <div className="rounded-xl border-2 border-brand-500 bg-white px-6 py-5 text-center shadow-md dark:bg-surface-900">
+                <Globe className="mx-auto h-8 w-8 text-brand-500" />
+                <p className="mt-2 text-sm font-bold text-surface-900 dark:text-white">Multando Hub</p>
+                <p className="text-xs text-surface-500">multando.com</p>
+              </div>
+            </div>
+
+            {/* Federation Features Grid */}
+            <div className="mx-auto mt-12 grid max-w-3xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                { icon: Shield, key: 'landing.federation_f1' },
+                { icon: Globe, key: 'landing.federation_f2' },
+                { icon: Network, key: 'landing.federation_f3' },
+                { icon: Coins, key: 'landing.federation_f4' },
+              ].map((item) => (
+                <div key={item.key} className="rounded-lg bg-white p-4 text-center shadow-sm dark:bg-surface-900">
+                  <item.icon className="mx-auto h-6 w-6 text-brand-500" />
+                  <p className="mt-2 text-sm font-medium text-surface-700 dark:text-surface-300">
+                    {t(item.key)}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-10 text-center">
+              <Link href="/developers">
+                <Button variant="outline" size="lg">
+                  {t('home.cta_learn_more')}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </section>
 
@@ -591,6 +771,7 @@ export default function HomePage() {
                     t('landing.authority_feature2'),
                     t('landing.authority_feature3'),
                     t('landing.authority_feature4'),
+                    t('landing.authority_feature5'),
                   ].map((feature) => (
                     <li key={feature} className="flex items-center gap-3 text-surface-700 dark:text-surface-300">
                       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-success-100 dark:bg-success-900/30">
