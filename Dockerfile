@@ -1,41 +1,45 @@
-FROM node:20-alpine AS base
-RUN apk add --no-cache python3 make g++ linux-headers eudev-dev libusb-dev
+# Stage 1: Install dependencies and build
+FROM node:18-alpine AS builder
 
-FROM base AS builder
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm install
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --frozen-lockfile || pnpm install
 
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-RUN npx next build --no-lint
 
-FROM node:20-alpine AS runner
+RUN pnpm build
+
+# Stage 2: Production runner
+FROM node:18-alpine AS runner
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 WORKDIR /app
+
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
 
-RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/.next/standalone ./
-
-RUN rm -rf node_modules && \
-    echo '{"dependencies":{"next":"14.2.35","react":"18.3.1","react-dom":"18.3.1"}}' > package.json && \
-    npm install --omit=dev --ignore-scripts
+COPY --from=builder /app/.next/static ./.next/static
 
 RUN chown -R nextjs:nodejs /app
+
 USER nextjs
 
 EXPOSE 3000
+
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
-
-HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=5 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
 
 CMD ["node", "server.js"]
