@@ -61,7 +61,8 @@
     "sign_up_free": "Registrate gratis",
     "welcome_back": "Bienvenido de nuevo! Inicia sesion para continuar.",
     "create_account_subtitle": "Crea tu cuenta para comenzar a reportar.",
-    "remember_me": "Recordarme"
+    "remember_me": "Recordarme",
+    "continue_with_google": "Continuar con Google"
   },
   "reports": {
     "title": "Reportes",
@@ -677,6 +678,8 @@
   },
   "auth_page": {
     "or_continue_with": "O continua con",
+    "or_sign_in_email": "O inicia sesion con email",
+    "or_sign_up_email": "O registrate con email",
     "agree_terms": "Acepto los",
     "terms_of_service": "Terminos de Servicio",
     "and": "y",
