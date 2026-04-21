@@ -79,6 +79,6 @@ We welcome contributions! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for d
 
 This project is licensed under the [Business Source License 1.1](./LICENSE).
 
-- **Licensor:** Jeronimo Technologies S.A.S. (DBA Multando)
+- **Licensor:** Jerónimo SAS
 - **Additional Use Grant:** Non-commercial and governmental production use permitted. Commercial SaaS offerings are not allowed.
 - **Change Date:** 2030-04-20 (converts to Apache License 2.0)
