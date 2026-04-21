@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
@@ -32,17 +32,39 @@ import {
   Map as MapIcon,
   LayoutGrid,
   Palette,
+  Link2,
+  Server,
 } from 'lucide-react';
 
+// ---------------------------------------------------------------------------
+// Sidebar navigation items
+// ---------------------------------------------------------------------------
+const NAV_ITEMS = [
+  { id: 'quickstart', labelKey: 'developers.nav_quickstart', icon: Zap },
+  { id: 'api-keys', labelKey: 'developers.nav_api_keys', icon: Key },
+  { id: 'connect-multando', labelKey: 'developers.nav_connect', icon: Link2 },
+  { id: 'api-reference', labelKey: 'developers.nav_api_ref', icon: BookOpen },
+  { id: 'geojson', labelKey: 'developers.nav_geojson', icon: MapIcon },
+  { id: 'widget', labelKey: 'developers.nav_widget', icon: LayoutGrid },
+  { id: 'clients', labelKey: 'developers.nav_clients', icon: Terminal },
+  { id: 'self-hosting', labelKey: 'developers.nav_selfhost', icon: Server },
+  { id: 'architecture', labelKey: 'developers.nav_architecture', icon: Braces },
+  { id: 'environments', labelKey: 'developers.nav_envs', icon: Shield },
+];
+
+// ---------------------------------------------------------------------------
 // SDK options
+// ---------------------------------------------------------------------------
 const SDKS = [
-  { id: 'flutter', name: 'Flutter', icon: '🐦', lang: 'dart', install: 'flutter pub add multando_sdk', color: 'bg-blue-500' },
-  { id: 'react-native', name: 'React Native', icon: '⚛️', lang: 'tsx', install: 'npm install @multando/react-native-sdk', color: 'bg-cyan-500' },
-  { id: 'ios', name: 'iOS (Swift)', icon: '🍎', lang: 'swift', install: '.package(url: "https://github.com/multando/ios-sdk", from: "1.0.0")', color: 'bg-surface-800' },
-  { id: 'android', name: 'Android (Kotlin)', icon: '🤖', lang: 'kotlin', install: 'implementation("com.multando:sdk:1.0.0")', color: 'bg-green-600' },
+  { id: 'flutter', name: 'Flutter', icon: '\u{1F426}', lang: 'dart', install: 'flutter pub add multando_sdk', color: 'bg-blue-500' },
+  { id: 'react-native', name: 'React Native', icon: '\u269B\uFE0F', lang: 'tsx', install: 'npm install @multando/react-native-sdk', color: 'bg-cyan-500' },
+  { id: 'ios', name: 'iOS (Swift)', icon: '\u{1F34E}', lang: 'swift', install: '.package(url: "https://github.com/multando/ios-sdk", from: "1.0.0")', color: 'bg-surface-800' },
+  { id: 'android', name: 'Android (Kotlin)', icon: '\u{1F916}', lang: 'kotlin', install: 'implementation("com.multando:sdk:1.0.0")', color: 'bg-green-600' },
 ] as const;
 
+// ---------------------------------------------------------------------------
 // Code examples per SDK
+// ---------------------------------------------------------------------------
 const CODE_EXAMPLES: Record<string, Record<string, string>> = {
   flutter: {
     init: `import 'package:multando_sdk/multando_sdk.dart';
@@ -196,7 +218,9 @@ fun MyScreen() {
   },
 };
 
-// API endpoints reference
+// ---------------------------------------------------------------------------
+// API endpoint reference data
+// ---------------------------------------------------------------------------
 const API_SECTIONS = [
   {
     title: 'Authentication',
@@ -276,15 +300,103 @@ const METHOD_COLORS: Record<string, string> = {
   DELETE: 'bg-danger-100 text-danger-700',
 };
 
+// ---------------------------------------------------------------------------
+// OAuth scopes table data
+// ---------------------------------------------------------------------------
+const OAUTH_SCOPES = [
+  { scope: 'reports:create', descKey: 'developers.scope_reports_create' },
+  { scope: 'reports:read', descKey: 'developers.scope_reports_read' },
+  { scope: 'infractions:read', descKey: 'developers.scope_infractions_read' },
+  { scope: 'users:read', descKey: 'developers.scope_users_read' },
+  { scope: 'balance:read', descKey: 'developers.scope_balance_read' },
+];
+
+// ---------------------------------------------------------------------------
+// Connect Multando OAuth code examples
+// ---------------------------------------------------------------------------
+const OAUTH_CODE_EXAMPLES: Record<string, { lang: string; label: string; code: string }> = {
+  flutter: {
+    lang: 'dart',
+    label: 'Flutter',
+    code: `// Build the authorize URL
+final url = client.auth.buildAuthorizeUrl(
+  redirectUri: 'myapp://multando-callback',
+);
+await launchUrl(Uri.parse(url));
+
+// After user authorizes, handle the callback
+final tokens = await client.auth.exchangeOAuthCode(
+  code: callbackCode,
+  redirectUri: 'myapp://multando-callback',
+);`,
+  },
+  python: {
+    lang: 'python',
+    label: 'Python',
+    code: `from multando import MultandoClient
+
+client = MultandoClient(api_key="mult_live_xxx")
+# Exchange the code from the callback
+tokens = await client.auth.exchange_oauth_code(
+    code="received_code",
+    redirect_uri="myapp://callback",
+)`,
+  },
+  node: {
+    lang: 'typescript',
+    label: 'Node.js',
+    code: `import { MultandoClient } from '@multando/node';
+
+const client = new MultandoClient({ apiKey: 'mult_live_xxx' });
+// Exchange the code from the callback
+const tokens = await client.auth.exchangeOAuthCode({
+  code: 'received_code',
+  redirectUri: 'myapp://callback',
+});`,
+  },
+};
+
+// ===========================================================================
+// Page Component
+// ===========================================================================
 export default function DevelopersPage() {
   const { t, locale } = useTranslation();
   const [activeSDK, setActiveSDK] = useState<string>('react-native');
   const [activeExample, setActiveExample] = useState<string>('init');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>('Reports');
+  const [activeOAuthTab, setActiveOAuthTab] = useState<string>('flutter');
   const { baseUrl } = useDataMode();
-  // Host for widget iframes — strip the /api/v1 suffix since widget URLs include it.
   const widgetHost = baseUrl.replace(/\/api\/v1$/, '');
+
+  // ---- Active section tracking via IntersectionObserver ----
+  const [activeSection, setActiveSection] = useState<string>('quickstart');
+  const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        }
+      },
+      { rootMargin: '-20% 0px -60% 0px', threshold: 0 },
+    );
+
+    const currentRefs = sectionRefs.current;
+    currentRefs.forEach((el) => observer.observe(el));
+
+    return () => {
+      currentRefs.forEach((el) => observer.unobserve(el));
+    };
+  }, []);
+
+  const registerSection = (id: string) => (el: HTMLElement | null) => {
+    if (el) sectionRefs.current.set(id, el);
+    else sectionRefs.current.delete(id);
+  };
 
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -294,6 +406,68 @@ export default function DevelopersPage() {
 
   const currentSDK = SDKS.find((s) => s.id === activeSDK)!;
   const currentExamples = CODE_EXAMPLES[activeSDK];
+
+  // ---- Sidebar nav component (desktop) ----
+  const SidebarNav = () => (
+    <nav className="hidden lg:block sticky top-20 h-fit space-y-1 pr-4">
+      {NAV_ITEMS.map((item) => {
+        const Icon = item.icon;
+        const isActive = activeSection === item.id;
+        return (
+          <a
+            key={item.id}
+            href={`#${item.id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className={cn(
+              'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+              isActive
+                ? 'bg-brand-50 text-brand-700 dark:bg-brand-950/30 dark:text-brand-400'
+                : 'text-surface-500 hover:bg-surface-100 hover:text-surface-900 dark:text-surface-400 dark:hover:bg-surface-800 dark:hover:text-white',
+            )}
+          >
+            <Icon className="h-4 w-4 shrink-0" />
+            {t(item.labelKey)}
+          </a>
+        );
+      })}
+    </nav>
+  );
+
+  // ---- Mobile horizontal nav ----
+  const MobileNav = () => (
+    <div className="sticky top-16 z-30 border-b border-surface-200 bg-white/95 backdrop-blur lg:hidden dark:border-surface-700 dark:bg-surface-900/95">
+      <div className="container-app overflow-x-auto">
+        <div className="flex gap-1 py-2">
+          {NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeSection === item.id;
+            return (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className={cn(
+                  'flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap',
+                  isActive
+                    ? 'bg-brand-500 text-white'
+                    : 'bg-surface-100 text-surface-600 dark:bg-surface-800 dark:text-surface-300',
+                )}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {t(item.labelKey)}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -338,192 +512,84 @@ export default function DevelopersPage() {
                   {t('developers.api_reference')}
                 </Button>
               </div>
-            </div>
-          </div>
-        </section>
 
-        {/* Features grid */}
-        <section className="border-b border-surface-200 bg-white py-16 dark:border-surface-700 dark:bg-surface-900">
-          <div className="container-app">
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {FEATURES.map((f) => (
-                <div key={f.titleKey} className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-950/30">
-                    <f.icon className="h-5 w-5 text-brand-500" />
+              {/* Condensed feature pills inside hero */}
+              <div className="mt-12 flex flex-wrap justify-center gap-3">
+                {FEATURES.map((f) => (
+                  <div
+                    key={f.titleKey}
+                    className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-surface-200"
+                  >
+                    <f.icon className="h-4 w-4 text-brand-400" />
+                    {t(f.titleKey)}
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-surface-900 dark:text-white">{t(f.titleKey)}</h3>
-                    <p className="mt-1 text-sm text-surface-500 dark:text-surface-400">{t(f.descKey)}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* API Key Management CTA */}
-        <section className="border-b border-surface-200 bg-gradient-to-r from-brand-50 via-white to-brand-50 py-10 dark:border-surface-700 dark:from-surface-900 dark:via-surface-800 dark:to-surface-900">
-          <div className="container-app">
-            <div className="flex flex-col items-center gap-6 rounded-2xl border border-brand-200 bg-white p-8 shadow-sm dark:border-brand-800 dark:bg-surface-800 sm:flex-row sm:justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-100 dark:bg-brand-950/30">
-                  <Key className="h-6 w-6 text-brand-500" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-surface-900 dark:text-white">
-                    {t('api_keys.manage_keys')}
-                  </h3>
-                  <p className="mt-0.5 text-sm text-surface-500 dark:text-surface-400">
-                    {t('api_keys.manage_keys_desc')}
-                  </p>
-                </div>
-              </div>
-              <Link href="/developers/keys">
-                <Button size="lg" leftIcon={<Key className="h-4 w-4" />}>
-                  {t('api_keys.manage_keys')}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Quick Start */}
-        <section id="quickstart" className="py-20 bg-surface-50 dark:bg-surface-800">
-          <div className="container-app">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
-                {t('developers.quick_start')}
-              </h2>
-              <p className="mt-3 text-surface-500 dark:text-surface-400">
-                {t('developers.choose_platform')}
-              </p>
-            </div>
-
-            {/* SDK Selector */}
-            <div className="mb-8 flex flex-wrap justify-center gap-3">
-              {SDKS.map((sdk) => (
-                <button
-                  key={sdk.id}
-                  onClick={() => {
-                    setActiveSDK(sdk.id);
-                    setActiveExample('init');
-                  }}
-                  className={cn(
-                    'flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition-all',
-                    activeSDK === sdk.id
-                      ? 'bg-surface-900 text-white shadow-lg dark:bg-white dark:text-surface-900'
-                      : 'bg-white text-surface-600 hover:bg-surface-100 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600'
-                  )}
-                >
-                  <span className="text-lg">{sdk.icon}</span>
-                  {sdk.name}
-                </button>
-              ))}
-            </div>
-
-            {/* Install command */}
-            <div className="mx-auto max-w-2xl mb-8">
-              <div className="flex items-center gap-2 rounded-xl bg-surface-900 p-4 dark:bg-surface-950">
-                <Terminal className="h-4 w-4 shrink-0 text-surface-400" />
-                <code className="flex-1 overflow-x-auto text-sm text-surface-200">
-                  {currentSDK.install}
-                </code>
-                <button
-                  onClick={() => copyToClipboard(currentSDK.install, 'install')}
-                  className="shrink-0 rounded p-1 text-surface-400 hover:text-white"
-                >
-                  {copiedId === 'install' ? (
-                    <Check className="h-4 w-4 text-success-400" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </button>
+                ))}
               </div>
             </div>
+          </div>
+        </section>
 
-            {/* Code example tabs */}
-            <div className="mx-auto max-w-3xl">
-              <div className="flex gap-1 rounded-t-xl bg-surface-800 p-1 dark:bg-surface-950">
-                {[
-                  { id: 'init', labelKey: 'developers.step_initialize' },
-                  { id: 'report', labelKey: 'developers.step_create_report' },
-                  { id: 'ui', labelKey: 'developers.step_ui_component' },
-                ].map((tab) => (
+        {/* Mobile sticky nav */}
+        <MobileNav />
+
+        {/* Main content: sidebar + sections */}
+        <div className="container-app lg:grid lg:grid-cols-[240px_1fr] lg:gap-8 lg:py-8">
+          {/* Desktop sidebar */}
+          <SidebarNav />
+
+          {/* Sections */}
+          <div className="min-w-0">
+            {/* ================================================================ */}
+            {/* 1. Quick Start */}
+            {/* ================================================================ */}
+            <section
+              id="quickstart"
+              ref={registerSection('quickstart')}
+              className="scroll-mt-24 py-12 lg:py-16"
+            >
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
+                  {t('developers.quick_start')}
+                </h2>
+                <p className="mt-3 text-surface-500 dark:text-surface-400">
+                  {t('developers.choose_platform')}
+                </p>
+              </div>
+
+              {/* SDK Selector */}
+              <div className="mb-8 flex flex-wrap justify-center gap-3">
+                {SDKS.map((sdk) => (
                   <button
-                    key={tab.id}
-                    onClick={() => setActiveExample(tab.id)}
+                    key={sdk.id}
+                    onClick={() => {
+                      setActiveSDK(sdk.id);
+                      setActiveExample('init');
+                    }}
                     className={cn(
-                      'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors',
-                      activeExample === tab.id
-                        ? 'bg-surface-700 text-white'
-                        : 'text-surface-400 hover:text-surface-200'
+                      'flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition-all',
+                      activeSDK === sdk.id
+                        ? 'bg-surface-900 text-white shadow-lg dark:bg-white dark:text-surface-900'
+                        : 'bg-white text-surface-600 hover:bg-surface-100 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600',
                     )}
                   >
-                    {t(tab.labelKey)}
+                    <span className="text-lg">{sdk.icon}</span>
+                    {sdk.name}
                   </button>
                 ))}
               </div>
-              <div className="relative rounded-b-xl bg-surface-900 p-6 dark:bg-surface-950">
-                <button
-                  onClick={() =>
-                    copyToClipboard(currentExamples[activeExample], `code-${activeExample}`)
-                  }
-                  className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
-                >
-                  {copiedId === `code-${activeExample}` ? (
-                    <Check className="h-4 w-4 text-success-400" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </button>
-                <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
-                  <code>{currentExamples[activeExample]}</code>
-                </pre>
-              </div>
-            </div>
-          </div>
-        </section>
 
-        {/* Public Data API (GeoJSON) */}
-        <section id="geojson" className="py-20 bg-white dark:bg-surface-900 border-t border-surface-200 dark:border-surface-700">
-          <div className="container-app">
-            <div className="text-center mb-12">
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-success-500/10 px-4 py-1.5 text-sm font-medium text-success-600 dark:text-success-400">
-                <MapIcon className="h-4 w-4" />
-                GeoJSON
-              </div>
-              <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
-                {t('developers.geojson_title')}
-              </h2>
-              <p className="mt-3 max-w-2xl mx-auto text-surface-500 dark:text-surface-400">
-                {t('developers.geojson_subtitle')}
-              </p>
-            </div>
-
-            <div className="mx-auto max-w-3xl space-y-6">
-              {/* Endpoint URL */}
-              <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-surface-500">
-                  {t('developers.geojson_endpoint_label')}
-                </p>
+              {/* Install command */}
+              <div className="mx-auto max-w-2xl mb-8">
                 <div className="flex items-center gap-2 rounded-xl bg-surface-900 p-4 dark:bg-surface-950">
-                  <span className="inline-flex items-center justify-center rounded-md bg-success-500/20 px-2 py-0.5 font-mono text-xs font-bold text-success-300">
-                    GET
-                  </span>
+                  <Terminal className="h-4 w-4 shrink-0 text-surface-400" />
                   <code className="flex-1 overflow-x-auto text-sm text-surface-200">
-                    https://api.multando.com/api/v1/reports/geojson
+                    {currentSDK.install}
                   </code>
                   <button
-                    onClick={() =>
-                      copyToClipboard(
-                        'https://api.multando.com/api/v1/reports/geojson',
-                        'geojson-url'
-                      )
-                    }
+                    onClick={() => copyToClipboard(currentSDK.install, 'install')}
                     className="shrink-0 rounded p-1 text-surface-400 hover:text-white"
                   >
-                    {copiedId === 'geojson-url' ? (
+                    {copiedId === 'install' ? (
                       <Check className="h-4 w-4 text-success-400" />
                     ) : (
                       <Copy className="h-4 w-4" />
@@ -532,79 +598,495 @@ export default function DevelopersPage() {
                 </div>
               </div>
 
-              {/* Params table */}
-              <div>
-                <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
-                  {t('developers.geojson_params_title')}
-                </h3>
-                <div className="overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700">
-                  <table className="w-full text-sm">
-                    <thead className="bg-surface-50 dark:bg-surface-800">
-                      <tr className="text-left text-xs font-semibold uppercase tracking-wider text-surface-500">
-                        <th className="px-4 py-3">Param</th>
-                        <th className="px-4 py-3">Type</th>
-                        <th className="px-4 py-3">Description</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-surface-100 dark:divide-surface-700">
-                      {[
-                        { name: 'city_id', type: 'int', descKey: 'developers.geojson_param_city' },
-                        { name: 'status', type: 'string', descKey: 'developers.geojson_param_status' },
-                        { name: 'since', type: 'ISO 8601', descKey: 'developers.geojson_param_since' },
-                        { name: 'bbox', type: 'string', descKey: 'developers.geojson_param_bbox' },
-                        { name: 'limit', type: 'int', descKey: 'developers.geojson_param_limit' },
-                        { name: 'api_key', type: 'string', descKey: 'developers.geojson_param_apikey' },
-                      ].map((p) => (
-                        <tr key={p.name} className="bg-white dark:bg-surface-900">
-                          <td className="px-4 py-3 font-mono text-brand-600 dark:text-brand-400">{p.name}</td>
-                          <td className="px-4 py-3 font-mono text-xs text-surface-500">{p.type}</td>
-                          <td className="px-4 py-3 text-surface-700 dark:text-surface-300">
-                            {t(p.descKey)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              {/* Code example tabs */}
+              <div className="mx-auto max-w-3xl">
+                <div className="flex gap-1 rounded-t-xl bg-surface-800 p-1 dark:bg-surface-950">
+                  {[
+                    { id: 'init', labelKey: 'developers.step_initialize' },
+                    { id: 'report', labelKey: 'developers.step_create_report' },
+                    { id: 'ui', labelKey: 'developers.step_ui_component' },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveExample(tab.id)}
+                      className={cn(
+                        'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors',
+                        activeExample === tab.id
+                          ? 'bg-surface-700 text-white'
+                          : 'text-surface-400 hover:text-surface-200',
+                      )}
+                    >
+                      {t(tab.labelKey)}
+                    </button>
+                  ))}
                 </div>
-              </div>
-
-              {/* curl example */}
-              <div>
-                <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
-                  {t('developers.geojson_curl_title')}
-                </h3>
-                <div className="relative rounded-xl bg-surface-900 p-5 dark:bg-surface-950">
+                <div className="relative rounded-b-xl bg-surface-900 p-6 dark:bg-surface-950">
                   <button
                     onClick={() =>
-                      copyToClipboard(
-                        `curl 'https://api.multando.com/api/v1/reports/geojson?city_id=1&status=approved,community_verified&limit=500'`,
-                        'geojson-curl'
-                      )
+                      copyToClipboard(currentExamples[activeExample], `code-${activeExample}`)
                     }
                     className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
                   >
-                    {copiedId === 'geojson-curl' ? (
+                    {copiedId === `code-${activeExample}` ? (
                       <Check className="h-4 w-4 text-success-400" />
                     ) : (
                       <Copy className="h-4 w-4" />
                     )}
                   </button>
                   <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
-                    <code>{`curl 'https://api.multando.com/api/v1/reports/geojson?city_id=1&status=approved,community_verified&limit=500'`}</code>
+                    <code>{currentExamples[activeExample]}</code>
                   </pre>
                 </div>
               </div>
+            </section>
 
-              {/* Leaflet example */}
-              <div>
+            {/* ================================================================ */}
+            {/* 2. API Keys */}
+            {/* ================================================================ */}
+            <section
+              id="api-keys"
+              ref={registerSection('api-keys')}
+              className="scroll-mt-24 border-t border-surface-200 py-12 dark:border-surface-700 lg:py-16"
+            >
+              <div className="flex flex-col items-center gap-6 rounded-2xl border border-brand-200 bg-white p-8 shadow-sm dark:border-brand-800 dark:bg-surface-800 sm:flex-row sm:justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-100 dark:bg-brand-950/30">
+                    <Key className="h-6 w-6 text-brand-500" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white">
+                      {t('api_keys.manage_keys')}
+                    </h3>
+                    <p className="mt-0.5 text-sm text-surface-500 dark:text-surface-400">
+                      {t('api_keys.manage_keys_desc')}
+                    </p>
+                  </div>
+                </div>
+                <Link href="/developers/keys">
+                  <Button size="lg" leftIcon={<Key className="h-4 w-4" />}>
+                    {t('api_keys.manage_keys')}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="mt-6 rounded-xl border border-surface-200 bg-surface-50 p-6 dark:border-surface-700 dark:bg-surface-800">
                 <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
-                  {t('developers.geojson_leaflet_title')}
+                  {t('developers.api_key_format')}
                 </h3>
-                <div className="relative rounded-xl bg-surface-900 p-5 dark:bg-surface-950">
-                  <button
-                    onClick={() =>
-                      copyToClipboard(
-                        `<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-lg bg-surface-900 px-4 py-3">
+                    <p className="text-xs text-surface-400 mb-1">Sandbox</p>
+                    <code className="text-sm text-accent-300">mult_test_xxxxxxxxxxxxxxxx</code>
+                  </div>
+                  <div className="rounded-lg bg-surface-900 px-4 py-3">
+                    <p className="text-xs text-surface-400 mb-1">Production</p>
+                    <code className="text-sm text-brand-300">mult_live_xxxxxxxxxxxxxxxx</code>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ================================================================ */}
+            {/* 3. Connect Multando (OAuth) -- NEW */}
+            {/* ================================================================ */}
+            <section
+              id="connect-multando"
+              ref={registerSection('connect-multando')}
+              className="scroll-mt-24 border-t border-surface-200 py-12 dark:border-surface-700 lg:py-16"
+            >
+              <div className="text-center mb-10">
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-brand-500/10 px-4 py-1.5 text-sm font-medium text-brand-600 dark:text-brand-400">
+                  <Link2 className="h-4 w-4" />
+                  OAuth 2.0
+                </div>
+                <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
+                  {t('developers.connect_title')}
+                </h2>
+                <p className="mt-3 max-w-2xl mx-auto text-surface-500 dark:text-surface-400">
+                  {t('developers.connect_subtitle')}
+                </p>
+              </div>
+
+              {/* OAuth Flow Steps */}
+              <div className="mx-auto max-w-3xl space-y-8">
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-surface-900 dark:text-white">
+                    {t('developers.connect_flow_title')}
+                  </h3>
+                  <div className="space-y-3">
+                    {[
+                      { step: 1, key: 'developers.connect_step1' },
+                      { step: 2, key: 'developers.connect_step2' },
+                      { step: 3, key: 'developers.connect_step3' },
+                      { step: 4, key: 'developers.connect_step4' },
+                      { step: 5, key: 'developers.connect_step5' },
+                    ].map((item) => (
+                      <div key={item.step} className="flex items-start gap-3">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">
+                          {item.step}
+                        </span>
+                        <p className="text-sm text-surface-700 dark:text-surface-300 pt-0.5">
+                          {t(item.key)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Authorize URL example */}
+                <div>
+                  <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                    {t('developers.connect_authorize_url')}
+                  </h3>
+                  <div className="relative rounded-xl bg-surface-900 p-5 dark:bg-surface-950">
+                    <button
+                      onClick={() =>
+                        copyToClipboard(
+                          'multando.com/oauth/authorize?client_id=YOUR_API_KEY&redirect_uri=myapp://callback&scope=reports:create,balance:read',
+                          'oauth-url',
+                        )
+                      }
+                      className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
+                    >
+                      {copiedId === 'oauth-url' ? (
+                        <Check className="h-4 w-4 text-success-400" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </button>
+                    <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
+                      <code>multando.com/oauth/authorize?client_id=YOUR_API_KEY&amp;redirect_uri=myapp://callback&amp;scope=reports:create,balance:read</code>
+                    </pre>
+                  </div>
+                </div>
+
+                {/* Code examples (tabbed) */}
+                <div>
+                  <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                    {t('developers.connect_code_examples')}
+                  </h3>
+                  <div className="flex gap-1 rounded-t-xl bg-surface-800 p-1 dark:bg-surface-950">
+                    {Object.entries(OAUTH_CODE_EXAMPLES).map(([key, ex]) => (
+                      <button
+                        key={key}
+                        onClick={() => setActiveOAuthTab(key)}
+                        className={cn(
+                          'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors',
+                          activeOAuthTab === key
+                            ? 'bg-surface-700 text-white'
+                            : 'text-surface-400 hover:text-surface-200',
+                        )}
+                      >
+                        {ex.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="relative rounded-b-xl bg-surface-900 p-6 dark:bg-surface-950">
+                    <button
+                      onClick={() =>
+                        copyToClipboard(
+                          OAUTH_CODE_EXAMPLES[activeOAuthTab].code,
+                          `oauth-code-${activeOAuthTab}`,
+                        )
+                      }
+                      className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
+                    >
+                      {copiedId === `oauth-code-${activeOAuthTab}` ? (
+                        <Check className="h-4 w-4 text-success-400" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </button>
+                    <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
+                      <code>{OAUTH_CODE_EXAMPLES[activeOAuthTab].code}</code>
+                    </pre>
+                  </div>
+                </div>
+
+                {/* Redirect URIs */}
+                <div>
+                  <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                    {t('developers.connect_redirect_title')}
+                  </h3>
+                  <p className="mb-3 text-sm text-surface-600 dark:text-surface-400">
+                    {t('developers.connect_redirect_desc')}
+                  </p>
+                  <div className="relative rounded-xl bg-surface-900 p-5 dark:bg-surface-950">
+                    <button
+                      onClick={() =>
+                        copyToClipboard(
+                          `PUT /api/v1/api-keys/{id}/redirect-uris\n{"redirect_uris": ["myapp://callback", "https://myapp.com/callback"]}`,
+                          'oauth-redirect',
+                        )
+                      }
+                      className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
+                    >
+                      {copiedId === 'oauth-redirect' ? (
+                        <Check className="h-4 w-4 text-success-400" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </button>
+                    <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
+                      <code>{`PUT /api/v1/api-keys/{id}/redirect-uris
+{"redirect_uris": ["myapp://callback", "https://myapp.com/callback"]}`}</code>
+                    </pre>
+                  </div>
+                </div>
+
+                {/* Available scopes */}
+                <div>
+                  <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                    {t('developers.connect_scopes_title')}
+                  </h3>
+                  <div className="overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700">
+                    <table className="w-full text-sm">
+                      <thead className="bg-surface-50 dark:bg-surface-800">
+                        <tr className="text-left text-xs font-semibold uppercase tracking-wider text-surface-500">
+                          <th className="px-4 py-3">Scope</th>
+                          <th className="px-4 py-3">{t('developers.connect_scope_desc_header')}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-surface-100 dark:divide-surface-700">
+                        {OAUTH_SCOPES.map((s) => (
+                          <tr key={s.scope} className="bg-white dark:bg-surface-900">
+                            <td className="px-4 py-3 font-mono text-brand-600 dark:text-brand-400">
+                              {s.scope}
+                            </td>
+                            <td className="px-4 py-3 text-surface-700 dark:text-surface-300">
+                              {t(s.descKey)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ================================================================ */}
+            {/* 4. API Reference */}
+            {/* ================================================================ */}
+            <section
+              id="api-reference"
+              ref={registerSection('api-reference')}
+              className="scroll-mt-24 border-t border-surface-200 py-12 dark:border-surface-700 lg:py-16"
+            >
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
+                  {t('developers.api_reference')}
+                </h2>
+                <p className="mt-3 text-surface-500 dark:text-surface-400">
+                  {t('developers.base_url')}:{' '}
+                  <code className="rounded bg-surface-100 px-2 py-0.5 font-mono text-sm text-brand-600 dark:bg-surface-800 dark:text-brand-400">
+                    https://api.multando.com/api/v1
+                  </code>
+                </p>
+                <p className="mt-2">
+                  <a
+                    href="/docs"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-brand-500 hover:text-brand-600"
+                  >
+                    {t('developers.full_docs')} <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </p>
+              </div>
+
+              <div className="mx-auto max-w-3xl space-y-3">
+                {API_SECTIONS.map((section) => {
+                  const isExpanded = expandedSection === section.title;
+                  return (
+                    <div
+                      key={section.title}
+                      className="rounded-xl border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800"
+                    >
+                      <button
+                        onClick={() =>
+                          setExpandedSection(isExpanded ? null : section.title)
+                        }
+                        className="flex w-full items-center gap-3 p-4 text-left"
+                      >
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-50 dark:bg-surface-700">
+                          <section.icon className="h-5 w-5 text-brand-500" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-surface-900 dark:text-white">
+                            {section.title}
+                          </h3>
+                          <p className="text-xs text-surface-500">
+                            {section.endpoints.length} {t('developers.endpoints')}
+                          </p>
+                        </div>
+                        {isExpanded ? (
+                          <ChevronDown className="h-5 w-5 text-surface-400" />
+                        ) : (
+                          <ChevronRight className="h-5 w-5 text-surface-400" />
+                        )}
+                      </button>
+                      {isExpanded && (
+                        <div className="border-t border-surface-100 dark:border-surface-700">
+                          {section.endpoints.map((ep) => (
+                            <div
+                              key={`${ep.method}-${ep.path}`}
+                              className="flex items-center gap-3 border-b border-surface-50 px-4 py-3 last:border-0 dark:border-surface-700/50"
+                            >
+                              <span
+                                className={cn(
+                                  'inline-flex w-16 items-center justify-center rounded-md px-2 py-0.5 font-mono text-xs font-bold',
+                                  METHOD_COLORS[ep.method],
+                                )}
+                              >
+                                {ep.method}
+                              </span>
+                              <code className="flex-1 font-mono text-sm text-surface-700 dark:text-surface-300">
+                                {ep.path}
+                              </code>
+                              {ep.auth && (
+                                <span className="flex items-center gap-1 rounded-full bg-warning-50 px-2 py-0.5 text-[10px] font-medium text-warning-700 dark:bg-warning-950 dark:text-warning-300">
+                                  <Key className="h-2.5 w-2.5" />
+                                  Auth
+                                </span>
+                              )}
+                              <span className="hidden text-xs text-surface-500 sm:block">
+                                {ep.desc}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* ================================================================ */}
+            {/* 5. GeoJSON API */}
+            {/* ================================================================ */}
+            <section
+              id="geojson"
+              ref={registerSection('geojson')}
+              className="scroll-mt-24 border-t border-surface-200 py-12 dark:border-surface-700 lg:py-16"
+            >
+              <div className="text-center mb-12">
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-success-500/10 px-4 py-1.5 text-sm font-medium text-success-600 dark:text-success-400">
+                  <MapIcon className="h-4 w-4" />
+                  GeoJSON
+                </div>
+                <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
+                  {t('developers.geojson_title')}
+                </h2>
+                <p className="mt-3 max-w-2xl mx-auto text-surface-500 dark:text-surface-400">
+                  {t('developers.geojson_subtitle')}
+                </p>
+              </div>
+
+              <div className="mx-auto max-w-3xl space-y-6">
+                {/* Endpoint URL */}
+                <div>
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-surface-500">
+                    {t('developers.geojson_endpoint_label')}
+                  </p>
+                  <div className="flex items-center gap-2 rounded-xl bg-surface-900 p-4 dark:bg-surface-950">
+                    <span className="inline-flex items-center justify-center rounded-md bg-success-500/20 px-2 py-0.5 font-mono text-xs font-bold text-success-300">
+                      GET
+                    </span>
+                    <code className="flex-1 overflow-x-auto text-sm text-surface-200">
+                      https://api.multando.com/api/v1/reports/geojson
+                    </code>
+                    <button
+                      onClick={() =>
+                        copyToClipboard(
+                          'https://api.multando.com/api/v1/reports/geojson',
+                          'geojson-url',
+                        )
+                      }
+                      className="shrink-0 rounded p-1 text-surface-400 hover:text-white"
+                    >
+                      {copiedId === 'geojson-url' ? (
+                        <Check className="h-4 w-4 text-success-400" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Params table */}
+                <div>
+                  <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                    {t('developers.geojson_params_title')}
+                  </h3>
+                  <div className="overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700">
+                    <table className="w-full text-sm">
+                      <thead className="bg-surface-50 dark:bg-surface-800">
+                        <tr className="text-left text-xs font-semibold uppercase tracking-wider text-surface-500">
+                          <th className="px-4 py-3">Param</th>
+                          <th className="px-4 py-3">Type</th>
+                          <th className="px-4 py-3">Description</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-surface-100 dark:divide-surface-700">
+                        {[
+                          { name: 'city_id', type: 'int', descKey: 'developers.geojson_param_city' },
+                          { name: 'status', type: 'string', descKey: 'developers.geojson_param_status' },
+                          { name: 'since', type: 'ISO 8601', descKey: 'developers.geojson_param_since' },
+                          { name: 'bbox', type: 'string', descKey: 'developers.geojson_param_bbox' },
+                          { name: 'limit', type: 'int', descKey: 'developers.geojson_param_limit' },
+                          { name: 'api_key', type: 'string', descKey: 'developers.geojson_param_apikey' },
+                        ].map((p) => (
+                          <tr key={p.name} className="bg-white dark:bg-surface-900">
+                            <td className="px-4 py-3 font-mono text-brand-600 dark:text-brand-400">{p.name}</td>
+                            <td className="px-4 py-3 font-mono text-xs text-surface-500">{p.type}</td>
+                            <td className="px-4 py-3 text-surface-700 dark:text-surface-300">
+                              {t(p.descKey)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* curl example */}
+                <div>
+                  <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                    {t('developers.geojson_curl_title')}
+                  </h3>
+                  <div className="relative rounded-xl bg-surface-900 p-5 dark:bg-surface-950">
+                    <button
+                      onClick={() =>
+                        copyToClipboard(
+                          `curl 'https://api.multando.com/api/v1/reports/geojson?city_id=1&status=approved,community_verified&limit=500'`,
+                          'geojson-curl',
+                        )
+                      }
+                      className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
+                    >
+                      {copiedId === 'geojson-curl' ? (
+                        <Check className="h-4 w-4 text-success-400" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </button>
+                    <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
+                      <code>{`curl 'https://api.multando.com/api/v1/reports/geojson?city_id=1&status=approved,community_verified&limit=500'`}</code>
+                    </pre>
+                  </div>
+                </div>
+
+                {/* Leaflet example */}
+                <div>
+                  <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                    {t('developers.geojson_leaflet_title')}
+                  </h3>
+                  <div className="relative rounded-xl bg-surface-900 p-5 dark:bg-surface-950">
+                    <button
+                      onClick={() =>
+                        copyToClipboard(
+                          `<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <div id="map" style="height:500px"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -614,19 +1096,19 @@ export default function DevelopersPage() {
     .then(r => r.json())
     .then(data => L.geoJSON(data).addTo(map));
 </script>`,
-                        'geojson-leaflet'
-                      )
-                    }
-                    className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
-                  >
-                    {copiedId === 'geojson-leaflet' ? (
-                      <Check className="h-4 w-4 text-success-400" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </button>
-                  <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
-                    <code>{`<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                          'geojson-leaflet',
+                        )
+                      }
+                      className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
+                    >
+                      {copiedId === 'geojson-leaflet' ? (
+                        <Check className="h-4 w-4 text-success-400" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </button>
+                    <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
+                      <code>{`<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <div id="map" style="height:500px"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -636,524 +1118,570 @@ export default function DevelopersPage() {
     .then(r => r.json())
     .then(data => L.geoJSON(data).addTo(map));
 </script>`}</code>
-                  </pre>
+                    </pre>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-success-200 bg-success-50 p-4 dark:border-success-800 dark:bg-success-950/30">
+                  <p className="text-sm text-success-800 dark:text-success-200">
+                    <Shield className="inline h-4 w-4 mr-1" />
+                    {t('developers.geojson_privacy_note')}
+                  </p>
+                </div>
+
+                <div className="text-center">
+                  <a
+                    href={`${widgetHost}/api/v1/widget/reports-map?height=500`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-brand-500 hover:text-brand-600"
+                  >
+                    {t('developers.geojson_live_example')} <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
                 </div>
               </div>
+            </section>
 
-              <div className="rounded-xl border border-success-200 bg-success-50 p-4 dark:border-success-800 dark:bg-success-950/30">
-                <p className="text-sm text-success-800 dark:text-success-200">
-                  <Shield className="inline h-4 w-4 mr-1" />
-                  {t('developers.geojson_privacy_note')}
+            {/* ================================================================ */}
+            {/* 6. Widget */}
+            {/* ================================================================ */}
+            <section
+              id="widget"
+              ref={registerSection('widget')}
+              className="scroll-mt-24 border-t border-surface-200 py-12 dark:border-surface-700 lg:py-16"
+            >
+              <div className="text-center mb-12">
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-accent-500/10 px-4 py-1.5 text-sm font-medium text-accent-600 dark:text-accent-400">
+                  <LayoutGrid className="h-4 w-4" />
+                  iframe
+                </div>
+                <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
+                  {t('developers.widget_headline')}
+                </h2>
+                <p className="mt-3 max-w-2xl mx-auto text-surface-500 dark:text-surface-400">
+                  {t('developers.widget_subtitle')}
                 </p>
               </div>
 
-              <div className="text-center">
-                <a
-                  href={`${widgetHost}/api/v1/widget/reports-map?height=500`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm font-medium text-brand-500 hover:text-brand-600"
-                >
-                  {t('developers.geojson_live_example')} <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Embeddable Widget */}
-        <section id="widget" className="py-20 bg-surface-50 dark:bg-surface-800">
-          <div className="container-app">
-            <div className="text-center mb-12">
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-accent-500/10 px-4 py-1.5 text-sm font-medium text-accent-600 dark:text-accent-400">
-                <LayoutGrid className="h-4 w-4" />
-                iframe
-              </div>
-              <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
-                {t('developers.widget_headline')}
-              </h2>
-              <p className="mt-3 max-w-2xl mx-auto text-surface-500 dark:text-surface-400">
-                {t('developers.widget_subtitle')}
-              </p>
-            </div>
-
-            <div className="mx-auto max-w-4xl space-y-8">
-              {/* Single widget example: map + leaderboard tabs with icons */}
-              <div>
-                <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
-                  {t('developers.widget_embed_title')}
-                </h3>
-                <div className="relative rounded-xl bg-surface-900 p-5 dark:bg-surface-950">
-                  <button
-                    onClick={() =>
-                      copyToClipboard(
-                        `<iframe
-  src="https://api.multando.com/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true&lang=${locale}"
-  width="100%" height="560" frameborder="0" allow="geolocation"></iframe>`,
-                        'widget-embed-tabs'
-                      )
-                    }
-                    className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
-                  >
-                    {copiedId === 'widget-embed-tabs' ? (
-                      <Check className="h-4 w-4 text-success-400" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </button>
-                  <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
-                    <code>{`<iframe
-  src="https://api.multando.com/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true&lang=${locale}"
-  width="100%" height="560" frameborder="0" allow="geolocation"></iframe>`}</code>
-                  </pre>
-                </div>
-                <div className="mt-4 overflow-hidden rounded-xl border border-surface-200 shadow-sm dark:border-surface-700">
-                  <iframe
-                    key={`widget-tabs-${widgetHost}`}
-                    src={`${widgetHost}/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true&lang=${locale}`}
-                    width="100%"
-                    height={560}
-                    style={{ border: 0, display: 'block' }}
-                    allow="geolocation"
-                    title="Multando map + leaderboard widget preview"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-
-              {/* Config options */}
-              <div>
-                <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
-                  {t('developers.widget_config_title')}
-                </h3>
-                <div className="overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700">
-                  <table className="w-full text-sm">
-                    <thead className="bg-white dark:bg-surface-900">
-                      <tr className="text-left text-xs font-semibold uppercase tracking-wider text-surface-500">
-                        <th className="px-4 py-3">Param</th>
-                        <th className="px-4 py-3">Type</th>
-                        <th className="px-4 py-3">Default</th>
-                        <th className="px-4 py-3">Description</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-surface-100 dark:divide-surface-700">
-                      {[
-                        { name: 'city_id', type: 'int', def: '—', desc: 'Filter by city' },
-                        { name: 'status', type: 'string', def: 'approved,community_verified', desc: 'Comma-separated statuses' },
-                        { name: 'primary_color', type: 'hex', def: 'e63946', desc: 'Accent color (no #)' },
-                        { name: 'lat', type: 'float', def: '4.7110', desc: 'Initial center latitude' },
-                        { name: 'lon', type: 'float', def: '-74.0721', desc: 'Initial center longitude' },
-                        { name: 'zoom', type: 'int', def: '12', desc: 'Initial zoom (1-20)' },
-                        { name: 'height', type: 'px', def: '500', desc: 'Map height in pixels' },
-                        { name: 'show_legend', type: 'bool', def: 'true', desc: 'Show status legend' },
-                        { name: 'lang', type: 'es|en', def: 'es', desc: 'UI language (alias of locale)' },
-                        { name: 'locale', type: 'es|en', def: 'es', desc: 'UI locale' },
-                        { name: 'limit', type: 'int', def: '500', desc: 'Max markers (1-5000)' },
-                        { name: 'cluster', type: 'bool', def: 'true', desc: 'Cluster markers' },
-                        { name: 'use_icons', type: 'bool', def: 'false', desc: 'Use Multando hand-pin icons instead of plain dots' },
-                        { name: 'tabs', type: 'string', def: 'map', desc: 'Panels to show: map, leaderboard, or map,leaderboard' },
-                        { name: 'default_tab', type: 'map|leaderboard', def: 'map', desc: 'Tab selected on load (when multiple)' },
-                      ].map((p) => (
-                        <tr key={p.name} className="bg-white dark:bg-surface-900">
-                          <td className="px-4 py-3 font-mono text-brand-600 dark:text-brand-400">{p.name}</td>
-                          <td className="px-4 py-3 font-mono text-xs text-surface-500">{p.type}</td>
-                          <td className="px-4 py-3 font-mono text-xs text-surface-500">{p.def}</td>
-                          <td className="px-4 py-3 text-surface-700 dark:text-surface-300">{p.desc}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Color schemes */}
-              <div>
-                <h3 className="mb-3 flex items-center gap-2 font-semibold text-surface-900 dark:text-white">
-                  <Palette className="h-4 w-4" />
-                  {t('developers.widget_color_schemes')}
-                </h3>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {[
-                    { key: 'developers.widget_scheme_bogota', color: 'f59e0b', hex: '#f59e0b' },
-                    { key: 'developers.widget_scheme_medellin', color: '0066cc', hex: '#0066cc' },
-                    { key: 'developers.widget_scheme_cali', color: 'e63946', hex: '#e63946' },
-                  ].map((s) => (
-                    <div
-                      key={s.color}
-                      className="rounded-xl border border-surface-200 bg-white p-4 dark:border-surface-700 dark:bg-surface-900"
-                      style={{ borderLeftWidth: 4, borderLeftColor: s.hex }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span
-                          className="inline-block h-6 w-6 rounded-md"
-                          style={{ background: s.hex }}
-                        />
-                        <div>
-                          <p className="text-sm font-semibold text-surface-900 dark:text-white">
-                            {t(s.key)}
-                          </p>
-                          <code className="text-xs text-surface-500">?primary_color={s.color}</code>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-accent-200 bg-accent-50 p-4 dark:border-accent-800 dark:bg-accent-950/30">
-                <p className="text-sm text-accent-800 dark:text-accent-200">
-                  {t('developers.widget_branding_note')}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* API Reference */}
-        <section id="api-reference" className="py-20 bg-white dark:bg-surface-900">
-          <div className="container-app">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
-                {t('developers.api_reference')}
-              </h2>
-              <p className="mt-3 text-surface-500 dark:text-surface-400">
-                {t('developers.base_url')}: <code className="rounded bg-surface-100 px-2 py-0.5 font-mono text-sm text-brand-600 dark:bg-surface-800 dark:text-brand-400">https://api.multando.com/api/v1</code>
-              </p>
-              <p className="mt-2">
-                <a
-                  href="/docs"
-                  className="inline-flex items-center gap-1 text-sm font-medium text-brand-500 hover:text-brand-600"
-                >
-                  {t('developers.full_docs')} <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-              </p>
-            </div>
-
-            <div className="mx-auto max-w-3xl space-y-3">
-              {API_SECTIONS.map((section) => {
-                const isExpanded = expandedSection === section.title;
-                return (
-                  <div
-                    key={section.title}
-                    className="rounded-xl border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800"
-                  >
+              <div className="mx-auto max-w-4xl space-y-8">
+                {/* Widget embed example */}
+                <div>
+                  <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                    {t('developers.widget_embed_title')}
+                  </h3>
+                  <div className="relative rounded-xl bg-surface-900 p-5 dark:bg-surface-950">
                     <button
                       onClick={() =>
-                        setExpandedSection(isExpanded ? null : section.title)
+                        copyToClipboard(
+                          `<iframe\n  src="https://api.multando.com/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true&lang=${locale}"\n  width="100%" height="560" frameborder="0" allow="geolocation"></iframe>`,
+                          'widget-embed-tabs',
+                        )
                       }
-                      className="flex w-full items-center gap-3 p-4 text-left"
+                      className="absolute right-4 top-4 rounded-lg p-2 text-surface-400 hover:bg-surface-800 hover:text-white"
                     >
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface-50 dark:bg-surface-700">
-                        <section.icon className="h-5 w-5 text-brand-500" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-surface-900 dark:text-white">
-                          {section.title}
-                        </h3>
-                        <p className="text-xs text-surface-500">
-                          {section.endpoints.length} {t('developers.endpoints')}
-                        </p>
-                      </div>
-                      {isExpanded ? (
-                        <ChevronDown className="h-5 w-5 text-surface-400" />
+                      {copiedId === 'widget-embed-tabs' ? (
+                        <Check className="h-4 w-4 text-success-400" />
                       ) : (
-                        <ChevronRight className="h-5 w-5 text-surface-400" />
+                        <Copy className="h-4 w-4" />
                       )}
                     </button>
-                    {isExpanded && (
-                      <div className="border-t border-surface-100 dark:border-surface-700">
-                        {section.endpoints.map((ep) => (
-                          <div
-                            key={`${ep.method}-${ep.path}`}
-                            className="flex items-center gap-3 border-b border-surface-50 px-4 py-3 last:border-0 dark:border-surface-700/50"
-                          >
-                            <span
-                              className={cn(
-                                'inline-flex w-16 items-center justify-center rounded-md px-2 py-0.5 font-mono text-xs font-bold',
-                                METHOD_COLORS[ep.method]
-                              )}
-                            >
-                              {ep.method}
-                            </span>
-                            <code className="flex-1 font-mono text-sm text-surface-700 dark:text-surface-300">
-                              {ep.path}
-                            </code>
-                            {ep.auth && (
-                              <span className="flex items-center gap-1 rounded-full bg-warning-50 px-2 py-0.5 text-[10px] font-medium text-warning-700 dark:bg-warning-950 dark:text-warning-300">
-                                <Key className="h-2.5 w-2.5" />
-                                Auth
-                              </span>
-                            )}
-                            <span className="hidden text-xs text-surface-500 sm:block">
-                              {ep.desc}
-                            </span>
-                          </div>
+                    <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
+                      <code>{`<iframe
+  src="https://api.multando.com/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true&lang=${locale}"
+  width="100%" height="560" frameborder="0" allow="geolocation"></iframe>`}</code>
+                    </pre>
+                  </div>
+                  <div className="mt-4 overflow-hidden rounded-xl border border-surface-200 shadow-sm dark:border-surface-700">
+                    <iframe
+                      key={`widget-tabs-${widgetHost}`}
+                      src={`${widgetHost}/api/v1/widget/reports-map?tabs=map,leaderboard&default_tab=map&primary_color=e63946&height=560&use_icons=true&lang=${locale}`}
+                      width="100%"
+                      height={560}
+                      style={{ border: 0, display: 'block' }}
+                      allow="geolocation"
+                      title="Multando map + leaderboard widget preview"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+
+                {/* Config options table */}
+                <div>
+                  <h3 className="mb-3 font-semibold text-surface-900 dark:text-white">
+                    {t('developers.widget_config_title')}
+                  </h3>
+                  <div className="overflow-hidden rounded-xl border border-surface-200 dark:border-surface-700">
+                    <table className="w-full text-sm">
+                      <thead className="bg-white dark:bg-surface-900">
+                        <tr className="text-left text-xs font-semibold uppercase tracking-wider text-surface-500">
+                          <th className="px-4 py-3">Param</th>
+                          <th className="px-4 py-3">Type</th>
+                          <th className="px-4 py-3">Default</th>
+                          <th className="px-4 py-3">Description</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-surface-100 dark:divide-surface-700">
+                        {[
+                          { name: 'city_id', type: 'int', def: '\u2014', desc: 'Filter by city' },
+                          { name: 'status', type: 'string', def: 'approved,community_verified', desc: 'Comma-separated statuses' },
+                          { name: 'primary_color', type: 'hex', def: 'e63946', desc: 'Accent color (no #)' },
+                          { name: 'lat', type: 'float', def: '4.7110', desc: 'Initial center latitude' },
+                          { name: 'lon', type: 'float', def: '-74.0721', desc: 'Initial center longitude' },
+                          { name: 'zoom', type: 'int', def: '12', desc: 'Initial zoom (1-20)' },
+                          { name: 'height', type: 'px', def: '500', desc: 'Map height in pixels' },
+                          { name: 'show_legend', type: 'bool', def: 'true', desc: 'Show status legend' },
+                          { name: 'lang', type: 'es|en', def: 'es', desc: 'UI language (alias of locale)' },
+                          { name: 'locale', type: 'es|en', def: 'es', desc: 'UI locale' },
+                          { name: 'limit', type: 'int', def: '500', desc: 'Max markers (1-5000)' },
+                          { name: 'cluster', type: 'bool', def: 'true', desc: 'Cluster markers' },
+                          { name: 'use_icons', type: 'bool', def: 'false', desc: 'Use Multando hand-pin icons instead of plain dots' },
+                          { name: 'tabs', type: 'string', def: 'map', desc: 'Panels to show: map, leaderboard, or map,leaderboard' },
+                          { name: 'default_tab', type: 'map|leaderboard', def: 'map', desc: 'Tab selected on load (when multiple)' },
+                        ].map((p) => (
+                          <tr key={p.name} className="bg-white dark:bg-surface-900">
+                            <td className="px-4 py-3 font-mono text-brand-600 dark:text-brand-400">{p.name}</td>
+                            <td className="px-4 py-3 font-mono text-xs text-surface-500">{p.type}</td>
+                            <td className="px-4 py-3 font-mono text-xs text-surface-500">{p.def}</td>
+                            <td className="px-4 py-3 text-surface-700 dark:text-surface-300">{p.desc}</td>
+                          </tr>
                         ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Environments Section */}
-        <section className="py-20 bg-white dark:bg-surface-900 border-t border-surface-200 dark:border-surface-700">
-          <div className="container-app">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
-                {t('developers.environments_title')}
-              </h2>
-              <p className="mt-3 text-surface-500 dark:text-surface-400">
-                {t('developers.environments_desc')}
-              </p>
-            </div>
-
-            <div className="mx-auto max-w-3xl grid gap-6 sm:grid-cols-2">
-              {/* Sandbox */}
-              <div className="rounded-xl border-2 border-accent-300 bg-accent-50/50 p-6 dark:border-accent-700 dark:bg-accent-950/20">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-100 dark:bg-accent-900/30">
-                    <span className="text-lg">🧪</span>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-surface-900 dark:text-white">{t('developers.sandbox_title')}</h3>
-                    <p className="text-xs text-accent-600 dark:text-accent-400">{t('developers.sandbox_label')}</p>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-                <div className="space-y-3 text-sm">
-                  <div>
-                    <p className="text-xs font-medium text-surface-500 mb-1">{t('developers.base_url')}</p>
-                    <code className="block rounded-lg bg-surface-900 px-3 py-2 font-mono text-xs text-accent-300">
-                      https://sandbox-api.multando.com/api/v1
-                    </code>
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-surface-500 mb-1">{t('developers.api_key_format')}</p>
-                    <code className="block rounded-lg bg-surface-900 px-3 py-2 font-mono text-xs text-accent-300">
-                      mult_test_xxxxxxxxxxxxxxxx
-                    </code>
-                  </div>
-                  <ul className="space-y-1 text-surface-600 dark:text-surface-400">
-                    <li className="flex items-center gap-2"><span className="text-accent-500">●</span> {t('developers.sandbox_feature1')}</li>
-                    <li className="flex items-center gap-2"><span className="text-accent-500">●</span> {t('developers.sandbox_feature2')}</li>
-                    <li className="flex items-center gap-2"><span className="text-accent-500">●</span> {t('developers.sandbox_feature3')}</li>
-                  </ul>
-                </div>
-              </div>
 
-              {/* Production */}
-              <div className="rounded-xl border-2 border-brand-300 bg-brand-50/50 p-6 dark:border-brand-700 dark:bg-brand-950/20">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-100 dark:bg-brand-900/30">
-                    <span className="text-lg">🚀</span>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-surface-900 dark:text-white">{t('developers.production_title')}</h3>
-                    <p className="text-xs text-brand-600 dark:text-brand-400">{t('developers.production_label')}</p>
-                  </div>
-                </div>
-                <div className="space-y-3 text-sm">
-                  <div>
-                    <p className="text-xs font-medium text-surface-500 mb-1">{t('developers.base_url')}</p>
-                    <code className="block rounded-lg bg-surface-900 px-3 py-2 font-mono text-xs text-brand-300">
-                      https://api.multando.com/api/v1
-                    </code>
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-surface-500 mb-1">{t('developers.api_key_format')}</p>
-                    <code className="block rounded-lg bg-surface-900 px-3 py-2 font-mono text-xs text-brand-300">
-                      mult_live_xxxxxxxxxxxxxxxx
-                    </code>
-                  </div>
-                  <ul className="space-y-1 text-surface-600 dark:text-surface-400">
-                    <li className="flex items-center gap-2"><span className="text-brand-500">●</span> {t('developers.production_feature1')}</li>
-                    <li className="flex items-center gap-2"><span className="text-brand-500">●</span> {t('developers.production_feature2')}</li>
-                    <li className="flex items-center gap-2"><span className="text-brand-500">●</span> {t('developers.production_feature3')}</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 mx-auto max-w-3xl rounded-xl border border-warning-200 bg-warning-50 p-4 dark:border-warning-800 dark:bg-warning-950/30">
-              <p className="text-sm text-warning-800 dark:text-warning-200 text-center">
-                <strong>⚠️ {t('developers.env_warning_title')}</strong> — {t('developers.env_warning_desc')}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Architecture diagram */}
-        <section className="py-20 bg-surface-50 dark:bg-surface-800">
-          <div className="container-app">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
-                {t('developers.how_it_works')}
-              </h2>
-              <p className="mt-3 text-surface-500 dark:text-surface-400">
-                {t('developers.how_it_works_desc')}
-              </p>
-            </div>
-
-            <div className="mx-auto max-w-4xl">
-              <div className="grid gap-4 sm:grid-cols-5">
-                {[
-                  { step: '1', labelKey: 'developers.your_app', sublabelKey: 'developers.sdk_integration', icon: Smartphone, color: 'bg-brand-500' },
-                  { step: '', labelKey: '', sublabelKey: '', icon: ArrowRight, color: '', isArrow: true },
-                  { step: '2', labelKey: 'developers.multando_api', sublabelKey: 'developers.validation_storage', icon: Globe, color: 'bg-success-500' },
-                  { step: '', labelKey: '', sublabelKey: '', icon: ArrowRight, color: '', isArrow: true },
-                  { step: '3', labelKey: 'developers.community', sublabelKey: 'developers.verification_rewards', icon: Shield, color: 'bg-accent-500' },
-                ].map((item, i) =>
-                  item.isArrow ? (
-                    <div
-                      key={i}
-                      className="hidden items-center justify-center sm:flex"
-                    >
-                      <ArrowRight className="h-6 w-6 text-surface-300" />
-                    </div>
-                  ) : (
-                    <Card key={i} variant="interactive" className="p-5 text-center">
+                {/* Color schemes */}
+                <div>
+                  <h3 className="mb-3 flex items-center gap-2 font-semibold text-surface-900 dark:text-white">
+                    <Palette className="h-4 w-4" />
+                    {t('developers.widget_color_schemes')}
+                  </h3>
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    {[
+                      { key: 'developers.widget_scheme_bogota', color: 'f59e0b', hex: '#f59e0b' },
+                      { key: 'developers.widget_scheme_medellin', color: '0066cc', hex: '#0066cc' },
+                      { key: 'developers.widget_scheme_cali', color: 'e63946', hex: '#e63946' },
+                    ].map((s) => (
                       <div
-                        className={cn(
-                          'mx-auto flex h-12 w-12 items-center justify-center rounded-xl text-white',
-                          item.color
-                        )}
+                        key={s.color}
+                        className="rounded-xl border border-surface-200 bg-white p-4 dark:border-surface-700 dark:bg-surface-900"
+                        style={{ borderLeftWidth: 4, borderLeftColor: s.hex }}
                       >
-                        <item.icon className="h-6 w-6" />
+                        <div className="flex items-center gap-3">
+                          <span
+                            className="inline-block h-6 w-6 rounded-md"
+                            style={{ background: s.hex }}
+                          />
+                          <div>
+                            <p className="text-sm font-semibold text-surface-900 dark:text-white">
+                              {t(s.key)}
+                            </p>
+                            <code className="text-xs text-surface-500">?primary_color={s.color}</code>
+                          </div>
+                        </div>
                       </div>
-                      <p className="mt-3 font-semibold text-surface-900 dark:text-white">
-                        {t(item.labelKey)}
-                      </p>
-                      <p className="mt-1 text-xs text-surface-500">{t(item.sublabelKey)}</p>
-                    </Card>
-                  )
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Self-Hosting Guide */}
-        <section id="self-hosting" className="border-t border-surface-200 bg-white py-16 dark:border-surface-700 dark:bg-surface-900 sm:py-24">
-          <div className="container-app">
-            <div className="mx-auto max-w-3xl">
-              <div className="mb-8 text-center">
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-brand-100 px-4 py-1.5 text-sm font-medium text-brand-700 dark:bg-brand-950/30 dark:text-brand-400">
-                  <Terminal className="h-4 w-4" />
-                  {t('developers.selfhost_badge')}
+                    ))}
+                  </div>
                 </div>
-                <h2 className="text-3xl font-bold tracking-tight text-surface-900 dark:text-white sm:text-4xl">
-                  {t('developers.selfhost_title')}
+
+                <div className="rounded-xl border border-accent-200 bg-accent-50 p-4 dark:border-accent-800 dark:bg-accent-950/30">
+                  <p className="text-sm text-accent-800 dark:text-accent-200">
+                    {t('developers.widget_branding_note')}
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* ================================================================ */}
+            {/* 7. Backend Clients -- NEW */}
+            {/* ================================================================ */}
+            <section
+              id="clients"
+              ref={registerSection('clients')}
+              className="scroll-mt-24 border-t border-surface-200 py-12 dark:border-surface-700 lg:py-16"
+            >
+              <div className="text-center mb-10">
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-surface-900/10 px-4 py-1.5 text-sm font-medium text-surface-700 dark:bg-white/10 dark:text-surface-300">
+                  <Terminal className="h-4 w-4" />
+                  Server SDKs
+                </div>
+                <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
+                  {t('developers.clients_title')}
                 </h2>
-                <p className="mt-4 text-lg text-surface-600 dark:text-surface-300">
-                  {t('developers.selfhost_subtitle')}
+                <p className="mt-3 max-w-2xl mx-auto text-surface-500 dark:text-surface-400">
+                  {t('developers.clients_subtitle')}
                 </p>
               </div>
 
-              {/* Prerequisites */}
-              <div className="mb-8 rounded-xl border border-surface-200 bg-surface-50 p-6 dark:border-surface-700 dark:bg-surface-800">
-                <h3 className="mb-3 text-lg font-semibold text-surface-900 dark:text-white">
-                  {t('developers.selfhost_prereqs')}
-                </h3>
-                <ul className="space-y-2 text-sm text-surface-600 dark:text-surface-300">
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> Docker & Docker Compose</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> {t('developers.selfhost_prereq_key')}</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> {t('developers.selfhost_prereq_domain')}</li>
-                </ul>
-              </div>
-
-              {/* Steps */}
-              <div className="space-y-6">
-                {/* Step 1 */}
+              <div className="mx-auto max-w-4xl grid gap-6 sm:grid-cols-2">
+                {/* Python */}
                 <div className="rounded-xl border border-surface-200 bg-white p-6 dark:border-surface-700 dark:bg-surface-800">
-                  <div className="mb-3 flex items-center gap-3">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">1</span>
-                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white">{t('developers.selfhost_step1')}</h3>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-2xl">🐍</span>
+                    <h3 className="text-lg font-bold text-surface-900 dark:text-white">Python</h3>
                   </div>
-                  <div className="rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
-                    <p>git clone https://github.com/jeronimotech/multando-backend.git</p>
-                    <p className="mt-1">cd multando-backend</p>
-                    <p className="mt-1">cp .env.example .env</p>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 rounded-lg bg-surface-900 p-3 dark:bg-surface-950">
+                      <Terminal className="h-4 w-4 shrink-0 text-surface-400" />
+                      <code className="flex-1 text-sm text-surface-200">pip install multando</code>
+                      <button
+                        onClick={() => copyToClipboard('pip install multando', 'pip-install')}
+                        className="shrink-0 rounded p-1 text-surface-400 hover:text-white"
+                      >
+                        {copiedId === 'pip-install' ? (
+                          <Check className="h-4 w-4 text-success-400" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                    <div className="relative rounded-lg bg-surface-900 p-4 dark:bg-surface-950">
+                      <button
+                        onClick={() =>
+                          copyToClipboard(
+                            `from multando import MultandoSyncClient\n\nclient = MultandoSyncClient(api_key="mult_live_xxx")\nclient.login("user@example.com", "password")\nreports = client.reports.list()`,
+                            'python-example',
+                          )
+                        }
+                        className="absolute right-3 top-3 rounded p-1 text-surface-400 hover:text-white"
+                      >
+                        {copiedId === 'python-example' ? (
+                          <Check className="h-4 w-4 text-success-400" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </button>
+                      <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
+                        <code>{`from multando import MultandoSyncClient
+
+client = MultandoSyncClient(api_key="mult_live_xxx")
+client.login("user@example.com", "password")
+reports = client.reports.list()`}</code>
+                      </pre>
+                    </div>
                   </div>
                 </div>
 
-                {/* Step 2 */}
+                {/* Node.js */}
                 <div className="rounded-xl border border-surface-200 bg-white p-6 dark:border-surface-700 dark:bg-surface-800">
-                  <div className="mb-3 flex items-center gap-3">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">2</span>
-                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white">{t('developers.selfhost_step2')}</h3>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-2xl">🟢</span>
+                    <h3 className="text-lg font-bold text-surface-900 dark:text-white">Node.js</h3>
                   </div>
-                  <p className="mb-3 text-sm text-surface-600 dark:text-surface-300">
-                    {t('developers.selfhost_step2_desc')}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 rounded-lg bg-surface-900 p-3 dark:bg-surface-950">
+                      <Terminal className="h-4 w-4 shrink-0 text-surface-400" />
+                      <code className="flex-1 text-sm text-surface-200">npm install @multando/node</code>
+                      <button
+                        onClick={() => copyToClipboard('npm install @multando/node', 'npm-install')}
+                        className="shrink-0 rounded p-1 text-surface-400 hover:text-white"
+                      >
+                        {copiedId === 'npm-install' ? (
+                          <Check className="h-4 w-4 text-success-400" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                    <div className="relative rounded-lg bg-surface-900 p-4 dark:bg-surface-950">
+                      <button
+                        onClick={() =>
+                          copyToClipboard(
+                            `import { MultandoClient } from '@multando/node';\n\nconst client = new MultandoClient({ apiKey: 'mult_live_xxx' });\nawait client.login('user@example.com', 'password');\nconst reports = await client.reports.list();`,
+                            'node-example',
+                          )
+                        }
+                        className="absolute right-3 top-3 rounded p-1 text-surface-400 hover:text-white"
+                      >
+                        {copiedId === 'node-example' ? (
+                          <Check className="h-4 w-4 text-success-400" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </button>
+                      <pre className="overflow-x-auto text-sm leading-relaxed text-surface-200">
+                        <code>{`import { MultandoClient } from '@multando/node';
+
+const client = new MultandoClient({ apiKey: 'mult_live_xxx' });
+await client.login('user@example.com', 'password');
+const reports = await client.reports.list();`}</code>
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ================================================================ */}
+            {/* 8. Self-Hosting */}
+            {/* ================================================================ */}
+            <section
+              id="self-hosting"
+              ref={registerSection('self-hosting')}
+              className="scroll-mt-24 border-t border-surface-200 py-12 dark:border-surface-700 lg:py-16"
+            >
+              <div className="mx-auto max-w-3xl">
+                <div className="mb-8 text-center">
+                  <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-brand-100 px-4 py-1.5 text-sm font-medium text-brand-700 dark:bg-brand-950/30 dark:text-brand-400">
+                    <Terminal className="h-4 w-4" />
+                    {t('developers.selfhost_badge')}
+                  </div>
+                  <h2 className="text-3xl font-bold tracking-tight text-surface-900 dark:text-white sm:text-4xl">
+                    {t('developers.selfhost_title')}
+                  </h2>
+                  <p className="mt-4 text-lg text-surface-600 dark:text-surface-300">
+                    {t('developers.selfhost_subtitle')}
                   </p>
+                </div>
+
+                {/* Prerequisites */}
+                <div className="mb-8 rounded-xl border border-surface-200 bg-surface-50 p-6 dark:border-surface-700 dark:bg-surface-800">
+                  <h3 className="mb-3 text-lg font-semibold text-surface-900 dark:text-white">
+                    {t('developers.selfhost_prereqs')}
+                  </h3>
+                  <ul className="space-y-2 text-sm text-surface-600 dark:text-surface-300">
+                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> Docker & Docker Compose</li>
+                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> {t('developers.selfhost_prereq_key')}</li>
+                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> {t('developers.selfhost_prereq_domain')}</li>
+                  </ul>
+                </div>
+
+                {/* Steps */}
+                <div className="space-y-6">
+                  {/* Step 1 */}
+                  <div className="rounded-xl border border-surface-200 bg-white p-6 dark:border-surface-700 dark:bg-surface-800">
+                    <div className="mb-3 flex items-center gap-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">1</span>
+                      <h3 className="text-lg font-semibold text-surface-900 dark:text-white">{t('developers.selfhost_step1')}</h3>
+                    </div>
+                    <div className="rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
+                      <p>git clone https://github.com/jeronimotech/multando-backend.git</p>
+                      <p className="mt-1">cd multando-backend</p>
+                      <p className="mt-1">cp .env.example .env</p>
+                    </div>
+                  </div>
+
+                  {/* Step 2 */}
+                  <div className="rounded-xl border border-surface-200 bg-white p-6 dark:border-surface-700 dark:bg-surface-800">
+                    <div className="mb-3 flex items-center gap-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">2</span>
+                      <h3 className="text-lg font-semibold text-surface-900 dark:text-white">{t('developers.selfhost_step2')}</h3>
+                    </div>
+                    <p className="mb-3 text-sm text-surface-600 dark:text-surface-300">
+                      {t('developers.selfhost_step2_desc')}
+                    </p>
+                    <div className="rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
+                      <p># .env</p>
+                      <p>SECRET_KEY=your-secret-key-here</p>
+                      <p>ANTHROPIC_API_KEY=sk-ant-...</p>
+                      <p className="mt-1"># Optional: connect to the Multando Hub</p>
+                      <p>FEDERATION_ENABLED=true</p>
+                      <p>FEDERATION_HUB_URL=https://api.multando.com</p>
+                      <p>FEDERATION_API_KEY=your-hub-key</p>
+                    </div>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className="rounded-xl border border-surface-200 bg-white p-6 dark:border-surface-700 dark:bg-surface-800">
+                    <div className="mb-3 flex items-center gap-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">3</span>
+                      <h3 className="text-lg font-semibold text-surface-900 dark:text-white">{t('developers.selfhost_step3')}</h3>
+                    </div>
+                    <div className="rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
+                      <p>docker compose -f docker-compose.self-host.yml up -d</p>
+                    </div>
+                    <p className="mt-3 text-sm text-surface-600 dark:text-surface-300">
+                      {t('developers.selfhost_step3_desc')}
+                    </p>
+                  </div>
+
+                  {/* Step 4 */}
+                  <div className="rounded-xl border border-surface-200 bg-white p-6 dark:border-surface-700 dark:bg-surface-800">
+                    <div className="mb-3 flex items-center gap-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">4</span>
+                      <h3 className="text-lg font-semibold text-surface-900 dark:text-white">{t('developers.selfhost_step4')}</h3>
+                    </div>
+                    <p className="text-sm text-surface-600 dark:text-surface-300">
+                      {t('developers.selfhost_step4_desc')}
+                    </p>
+                    <div className="mt-3 rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
+                      <p>curl http://localhost:8000/health</p>
+                      <p className="text-surface-400"># {`{"status":"healthy","version":"0.1.0"}`}</p>
+                      <p className="mt-2"># API docs at http://localhost:8000/docs</p>
+                      <p># Frontend at http://localhost:3000</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Frontend deploy note */}
+                <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-700/40 dark:bg-amber-950/20">
+                  <h3 className="mb-2 text-sm font-semibold text-amber-800 dark:text-amber-300">{t('developers.selfhost_frontend_title')}</h3>
                   <div className="rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
-                    <p># .env</p>
-                    <p>SECRET_KEY=your-secret-key-here</p>
-                    <p>ANTHROPIC_API_KEY=sk-ant-...</p>
-                    <p className="mt-1"># Optional: connect to the Multando Hub</p>
-                    <p>FEDERATION_ENABLED=true</p>
-                    <p>FEDERATION_HUB_URL=https://api.multando.com</p>
-                    <p>FEDERATION_API_KEY=your-hub-key</p>
+                    <p>git clone https://github.com/jeronimotech/multando-frontend.git</p>
+                    <p className="mt-1">cd multando-frontend</p>
+                    <p className="mt-1">echo &quot;NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1&quot; &gt; .env</p>
+                    <p className="mt-1">docker build -t multando-frontend .</p>
+                    <p className="mt-1">docker run -p 3000:3000 multando-frontend</p>
                   </div>
                 </div>
 
-                {/* Step 3 */}
-                <div className="rounded-xl border border-surface-200 bg-white p-6 dark:border-surface-700 dark:bg-surface-800">
-                  <div className="mb-3 flex items-center gap-3">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">3</span>
-                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white">{t('developers.selfhost_step3')}</h3>
+                <div className="mt-8 text-center">
+                  <a href="https://github.com/jeronimotech" target="_blank" rel="noopener noreferrer">
+                    <Button size="lg">
+                      <Code2 className="mr-2 h-4 w-4" />
+                      {t('developers.selfhost_github_cta')}
+                      <ExternalLink className="ml-2 h-4 w-4" />
+                    </Button>
+                  </a>
+                </div>
+              </div>
+            </section>
+
+            {/* ================================================================ */}
+            {/* 9. Architecture */}
+            {/* ================================================================ */}
+            <section
+              id="architecture"
+              ref={registerSection('architecture')}
+              className="scroll-mt-24 border-t border-surface-200 py-12 dark:border-surface-700 lg:py-16"
+            >
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
+                  {t('developers.how_it_works')}
+                </h2>
+                <p className="mt-3 text-surface-500 dark:text-surface-400">
+                  {t('developers.how_it_works_desc')}
+                </p>
+              </div>
+
+              <div className="mx-auto max-w-4xl">
+                <div className="grid gap-4 sm:grid-cols-5">
+                  {[
+                    { step: '1', labelKey: 'developers.your_app', sublabelKey: 'developers.sdk_integration', icon: Smartphone, color: 'bg-brand-500' },
+                    { step: '', labelKey: '', sublabelKey: '', icon: ArrowRight, color: '', isArrow: true },
+                    { step: '2', labelKey: 'developers.multando_api', sublabelKey: 'developers.validation_storage', icon: Globe, color: 'bg-success-500' },
+                    { step: '', labelKey: '', sublabelKey: '', icon: ArrowRight, color: '', isArrow: true },
+                    { step: '3', labelKey: 'developers.community', sublabelKey: 'developers.verification_rewards', icon: Shield, color: 'bg-accent-500' },
+                  ].map((item, i) =>
+                    item.isArrow ? (
+                      <div
+                        key={i}
+                        className="hidden items-center justify-center sm:flex"
+                      >
+                        <ArrowRight className="h-6 w-6 text-surface-300" />
+                      </div>
+                    ) : (
+                      <Card key={i} variant="interactive" className="p-5 text-center">
+                        <div
+                          className={cn(
+                            'mx-auto flex h-12 w-12 items-center justify-center rounded-xl text-white',
+                            item.color,
+                          )}
+                        >
+                          <item.icon className="h-6 w-6" />
+                        </div>
+                        <p className="mt-3 font-semibold text-surface-900 dark:text-white">
+                          {t(item.labelKey)}
+                        </p>
+                        <p className="mt-1 text-xs text-surface-500">{t(item.sublabelKey)}</p>
+                      </Card>
+                    ),
+                  )}
+                </div>
+              </div>
+            </section>
+
+            {/* ================================================================ */}
+            {/* 10. Environments */}
+            {/* ================================================================ */}
+            <section
+              id="environments"
+              ref={registerSection('environments')}
+              className="scroll-mt-24 border-t border-surface-200 py-12 dark:border-surface-700 lg:py-16"
+            >
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
+                  {t('developers.environments_title')}
+                </h2>
+                <p className="mt-3 text-surface-500 dark:text-surface-400">
+                  {t('developers.environments_desc')}
+                </p>
+              </div>
+
+              <div className="mx-auto max-w-3xl grid gap-6 sm:grid-cols-2">
+                {/* Sandbox */}
+                <div className="rounded-xl border-2 border-accent-300 bg-accent-50/50 p-6 dark:border-accent-700 dark:bg-accent-950/20">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-100 dark:bg-accent-900/30">
+                      <span className="text-lg">🧪</span>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-surface-900 dark:text-white">{t('developers.sandbox_title')}</h3>
+                      <p className="text-xs text-accent-600 dark:text-accent-400">{t('developers.sandbox_label')}</p>
+                    </div>
                   </div>
-                  <div className="rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
-                    <p>docker compose -f docker-compose.self-host.yml up -d</p>
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <p className="text-xs font-medium text-surface-500 mb-1">{t('developers.base_url')}</p>
+                      <code className="block rounded-lg bg-surface-900 px-3 py-2 font-mono text-xs text-accent-300">
+                        https://sandbox-api.multando.com/api/v1
+                      </code>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-surface-500 mb-1">{t('developers.api_key_format')}</p>
+                      <code className="block rounded-lg bg-surface-900 px-3 py-2 font-mono text-xs text-accent-300">
+                        mult_test_xxxxxxxxxxxxxxxx
+                      </code>
+                    </div>
+                    <ul className="space-y-1 text-surface-600 dark:text-surface-400">
+                      <li className="flex items-center gap-2"><span className="text-accent-500">{'\u25CF'}</span> {t('developers.sandbox_feature1')}</li>
+                      <li className="flex items-center gap-2"><span className="text-accent-500">{'\u25CF'}</span> {t('developers.sandbox_feature2')}</li>
+                      <li className="flex items-center gap-2"><span className="text-accent-500">{'\u25CF'}</span> {t('developers.sandbox_feature3')}</li>
+                    </ul>
                   </div>
-                  <p className="mt-3 text-sm text-surface-600 dark:text-surface-300">
-                    {t('developers.selfhost_step3_desc')}
-                  </p>
                 </div>
 
-                {/* Step 4 */}
-                <div className="rounded-xl border border-surface-200 bg-white p-6 dark:border-surface-700 dark:bg-surface-800">
-                  <div className="mb-3 flex items-center gap-3">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white">4</span>
-                    <h3 className="text-lg font-semibold text-surface-900 dark:text-white">{t('developers.selfhost_step4')}</h3>
+                {/* Production */}
+                <div className="rounded-xl border-2 border-brand-300 bg-brand-50/50 p-6 dark:border-brand-700 dark:bg-brand-950/20">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-100 dark:bg-brand-900/30">
+                      <span className="text-lg">🚀</span>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-surface-900 dark:text-white">{t('developers.production_title')}</h3>
+                      <p className="text-xs text-brand-600 dark:text-brand-400">{t('developers.production_label')}</p>
+                    </div>
                   </div>
-                  <p className="text-sm text-surface-600 dark:text-surface-300">
-                    {t('developers.selfhost_step4_desc')}
-                  </p>
-                  <div className="mt-3 rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
-                    <p>curl http://localhost:8000/health</p>
-                    <p className="text-surface-400"># {`{"status":"healthy","version":"0.1.0"}`}</p>
-                    <p className="mt-2"># API docs at http://localhost:8000/docs</p>
-                    <p># Frontend at http://localhost:3000</p>
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <p className="text-xs font-medium text-surface-500 mb-1">{t('developers.base_url')}</p>
+                      <code className="block rounded-lg bg-surface-900 px-3 py-2 font-mono text-xs text-brand-300">
+                        https://api.multando.com/api/v1
+                      </code>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-surface-500 mb-1">{t('developers.api_key_format')}</p>
+                      <code className="block rounded-lg bg-surface-900 px-3 py-2 font-mono text-xs text-brand-300">
+                        mult_live_xxxxxxxxxxxxxxxx
+                      </code>
+                    </div>
+                    <ul className="space-y-1 text-surface-600 dark:text-surface-400">
+                      <li className="flex items-center gap-2"><span className="text-brand-500">{'\u25CF'}</span> {t('developers.production_feature1')}</li>
+                      <li className="flex items-center gap-2"><span className="text-brand-500">{'\u25CF'}</span> {t('developers.production_feature2')}</li>
+                      <li className="flex items-center gap-2"><span className="text-brand-500">{'\u25CF'}</span> {t('developers.production_feature3')}</li>
+                    </ul>
                   </div>
                 </div>
               </div>
 
-              {/* Frontend deploy note */}
-              <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-700/40 dark:bg-amber-950/20">
-                <h3 className="mb-2 text-sm font-semibold text-amber-800 dark:text-amber-300">{t('developers.selfhost_frontend_title')}</h3>
-                <div className="rounded-lg bg-surface-900 p-4 font-mono text-sm text-green-400">
-                  <p>git clone https://github.com/jeronimotech/multando-frontend.git</p>
-                  <p className="mt-1">cd multando-frontend</p>
-                  <p className="mt-1">echo &quot;NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1&quot; &gt; .env</p>
-                  <p className="mt-1">docker build -t multando-frontend .</p>
-                  <p className="mt-1">docker run -p 3000:3000 multando-frontend</p>
-                </div>
+              <div className="mt-8 mx-auto max-w-3xl rounded-xl border border-warning-200 bg-warning-50 p-4 dark:border-warning-800 dark:bg-warning-950/30">
+                <p className="text-sm text-warning-800 dark:text-warning-200 text-center">
+                  <strong>⚠️ {t('developers.env_warning_title')}</strong> — {t('developers.env_warning_desc')}
+                </p>
               </div>
-
-              <div className="mt-8 text-center">
-                <a href="https://github.com/jeronimotech" target="_blank" rel="noopener noreferrer">
-                  <Button size="lg">
-                    <Code2 className="mr-2 h-4 w-4" />
-                    {t('developers.selfhost_github_cta')}
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </Button>
-                </a>
-              </div>
-            </div>
+            </section>
           </div>
-        </section>
+        </div>
 
         {/* CTA */}
         <section className="bg-gradient-to-r from-brand-600 to-brand-700 py-16">
