@@ -1425,5 +1425,17 @@
     "status_revoked": "Revoked",
     "manage_keys": "Manage API Keys",
     "manage_keys_desc": "Create sandbox and production keys for your applications"
+  },
+  "oauth": {
+    "consent_title": "wants to access your Multando account",
+    "consent_allow": "This will allow {app} to:",
+    "scope_reports_create": "Create reports on your behalf",
+    "scope_reports_read": "Read your report history",
+    "scope_infractions_read": "View available infractions",
+    "scope_users_read": "View your profile",
+    "scope_balance_read": "View your wallet balance",
+    "authorize": "Authorize",
+    "cancel": "Cancel",
+    "logged_in_as": "Logged in as"
   }
 }

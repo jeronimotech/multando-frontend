@@ -1425,5 +1425,17 @@
     "status_revoked": "Revocada",
     "manage_keys": "Gestionar claves API",
     "manage_keys_desc": "Crea claves sandbox y produccion para tus aplicaciones"
+  },
+  "oauth": {
+    "consent_title": "quiere acceder a tu cuenta de Multando",
+    "consent_allow": "Esto permitira a {app}:",
+    "scope_reports_create": "Crear reportes en tu nombre",
+    "scope_reports_read": "Leer tu historial de reportes",
+    "scope_infractions_read": "Ver infracciones disponibles",
+    "scope_users_read": "Ver tu perfil",
+    "scope_balance_read": "Ver tu saldo",
+    "authorize": "Autorizar",
+    "cancel": "Cancelar",
+    "logged_in_as": "Conectado como"
   }
 }
