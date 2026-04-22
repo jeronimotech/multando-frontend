@@ -361,7 +361,7 @@ export default function HomePage() {
         </section>
 
         {/* How It Works Section */}
-        <section className="border-t border-surface-200 bg-surface-50 py-16 dark:border-surface-700 dark:bg-surface-800 sm:py-24">
+        <section id="learn-more" className="scroll-mt-24 border-t border-surface-200 bg-surface-50 py-16 dark:border-surface-700 dark:bg-surface-800 sm:py-24">
           <div className="container-app">
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="text-3xl font-bold tracking-tight text-surface-900 dark:text-white sm:text-4xl">
