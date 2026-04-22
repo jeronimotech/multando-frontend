@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTranslation } from "@/hooks/use-translation";
+import { DataModeToggle } from "@/components/ui/data-mode-toggle";
 
 const footerLinks = {
   product: [
@@ -123,11 +124,14 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Copyright */}
+        {/* Copyright + Data Mode Toggle */}
         <div className="mt-12 border-t border-surface-200 pt-8 dark:border-surface-700">
-          <p className="text-center text-sm text-surface-500 dark:text-surface-400">
-            &copy; {new Date().getFullYear()} Multando. {t('footer.rights_reserved')}
-          </p>
+          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <p className="text-sm text-surface-500 dark:text-surface-400">
+              &copy; {new Date().getFullYear()} Multando. {t('footer.rights_reserved')}
+            </p>
+            <DataModeToggle />
+          </div>
         </div>
       </div>
     </footer>

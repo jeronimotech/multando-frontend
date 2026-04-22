@@ -39,6 +39,17 @@
   .container-app {
     @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
   }
+
+  /* Code blocks: horizontal scroll on overflow instead of pushing layout */
+  .font-mono {
+    overflow-x: auto;
+    word-break: break-all;
+  }
+
+  pre, code {
+    overflow-x: auto;
+    max-width: 100%;
+  }
 }
 
 @layer utilities {

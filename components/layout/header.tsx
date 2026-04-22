@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { DataModeToggle } from "@/components/ui/data-mode-toggle";
 import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
@@ -13,16 +12,16 @@ export function Header() {
   const { t } = useTranslation();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-surface-200 bg-white/80 backdrop-blur dark:border-surface-700 dark:bg-surface-900/80">
-      <div className="mx-auto w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+    <header className="sticky top-0 z-50 w-full overflow-x-hidden border-b border-surface-200 bg-white/80 backdrop-blur dark:border-surface-700 dark:bg-surface-900/80">
+      <div className="mx-auto w-full max-w-full px-3 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between gap-2">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-surface-900 dark:bg-surface-700"><img src="/logo.png" alt="Multando" className="h-7 w-7" /></span><span className="text-xl font-bold text-brand-500">Multando</span>
+          <Link href="/" className="flex shrink-0 items-center gap-1.5">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-surface-900 dark:bg-surface-700"><img src="/logo.png" alt="Multando" className="h-6 w-6" /></span><span className="hidden text-xl font-bold text-brand-500 sm:inline">Multando</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden items-center gap-6 md:flex">
+          <nav className="hidden items-center gap-4 lg:gap-5 md:flex">
             <Link
               href="#learn-more"
               className="text-sm font-medium text-surface-600 transition-colors hover:text-surface-900 dark:text-surface-300 dark:hover:text-white"
@@ -63,7 +62,6 @@ export function Header() {
 
           {/* Desktop Auth Buttons & Language */}
           <div className="hidden items-center gap-3 md:flex">
-            <DataModeToggle />
             <LanguageSwitcher />
             <Link href="/login">
               <Button variant="ghost">{t('auth.sign_in')}</Button>
@@ -75,7 +73,6 @@ export function Header() {
 
           {/* Mobile Menu Button */}
           <div className="flex shrink-0 items-center gap-1.5 md:hidden">
-            <DataModeToggle compact />
             <LanguageSwitcher />
             <button
               type="button"
