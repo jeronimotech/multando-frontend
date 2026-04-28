@@ -38,7 +38,8 @@ export default function GoogleCallbackPage() {
     const doLogin = async () => {
       if (oauthApiBase) {
         // Authenticate against the target backend (sandbox)
-        // so the JWT is valid there for the consent POST
+        // Store JWT in sessionStorage (NOT cookies/localStorage) so
+        // the global useAuth hook can't see or clear it.
         sessionStorage.removeItem("multando_oauth_api_base");
         const resp = await fetch(`${oauthApiBase}/auth/oauth/google`, {
           method: "POST",
@@ -47,12 +48,8 @@ export default function GoogleCallbackPage() {
         });
         if (!resp.ok) throw new Error(`Auth failed: ${resp.status}`);
         const data = await resp.json();
-        // Store the target backend's JWT
-        const { setTokens } = await import("@/lib/auth");
-        setTokens({
-          accessToken: data.access_token,
-          refreshToken: data.refresh_token,
-        });
+        // Store in a separate key that useAuth doesn't touch
+        sessionStorage.setItem("multando_oauth_jwt", data.access_token);
       } else {
         // Normal login against default backend
         await socialLogin("google", { code, redirect_uri: redirectUri });

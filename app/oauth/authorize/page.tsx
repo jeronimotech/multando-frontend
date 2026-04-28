@@ -64,15 +64,8 @@ function OAuthConsentForm() {
     };
 
     if (apiBase) {
-      // Custom backend — verify JWT directly, don't wait for useAuth
-      let token: string | undefined;
-      if (typeof document !== "undefined") {
-        const match = document.cookie.match(/multando_token=([^;]+)/);
-        if (match) token = decodeURIComponent(match[1]);
-      }
-      if (!token && typeof localStorage !== "undefined") {
-        token = localStorage.getItem("token") || undefined;
-      }
+      // Custom backend — read JWT from sessionStorage (isolated from useAuth)
+      const token = sessionStorage.getItem("multando_oauth_jwt");
       if (!token) {
         redirectToLogin();
         return;
@@ -86,7 +79,7 @@ function OAuthConsentForm() {
             setTargetUser(userData);
             setTokenVerified(true);
           } else {
-            import("@/lib/auth").then(({ clearTokens }) => clearTokens());
+            sessionStorage.removeItem("multando_oauth_jwt");
             redirectToLogin();
           }
         })
@@ -138,14 +131,18 @@ function OAuthConsentForm() {
         ? `${apiBase}/oauth/authorize?${queryParams}`
         : `/oauth/authorize?${queryParams}`;
 
-      // Get JWT from cookie or localStorage
+      // Get JWT — from sessionStorage for cross-backend, cookie/localStorage otherwise
       let token: string | undefined;
-      if (typeof document !== "undefined") {
-        const match = document.cookie.match(/multando_token=([^;]+)/);
-        if (match) token = decodeURIComponent(match[1]);
-      }
-      if (!token && typeof localStorage !== "undefined") {
-        token = localStorage.getItem("token") || undefined;
+      if (apiBase) {
+        token = sessionStorage.getItem("multando_oauth_jwt") || undefined;
+      } else {
+        if (typeof document !== "undefined") {
+          const match = document.cookie.match(/multando_token=([^;]+)/);
+          if (match) token = decodeURIComponent(match[1]);
+        }
+        if (!token && typeof localStorage !== "undefined") {
+          token = localStorage.getItem("token") || undefined;
+        }
       }
 
       const result = apiBase
