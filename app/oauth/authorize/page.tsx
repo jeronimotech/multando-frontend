@@ -33,6 +33,9 @@ function OAuthConsentForm() {
   const scope = searchParams.get("scope") ?? "";
   const state = searchParams.get("state") ?? "";
   const responseType = searchParams.get("response_type") ?? "code";
+  // SDK passes api_base so the consent page calls the correct backend
+  // (e.g. sandbox-api.multando.com/api/v1 vs api.multando.com/api/v1)
+  const apiBase = searchParams.get("api_base") || "";
 
   const [consent, setConsent] = useState<ConsentInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,9 +57,10 @@ function OAuthConsentForm() {
 
     const fetchConsent = async () => {
       try {
-        const data = await api.get<ConsentInfo>(
-          `/oauth/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`
-        );
+        const url = `${apiBase || ""}/oauth/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
+        const data = apiBase
+          ? await fetch(url, { headers: { "Content-Type": "application/json" } }).then((r) => { if (!r.ok) throw new Error(r.statusText); return r.json(); })
+          : await api.get<ConsentInfo>(url);
         setConsent(data);
       } catch {
         setError("Unable to load authorization details. The application may be misconfigured.");
@@ -72,13 +76,20 @@ function OAuthConsentForm() {
     setSubmitting(true);
     setError(null);
     try {
-      const result = await api.post<{ redirect_url: string }>("/oauth/authorize", {
-        client_id: clientId,
-        redirect_uri: redirectUri,
-        scope,
-        state,
-        response_type: responseType,
-      });
+      const postUrl = `${apiBase || ""}/oauth/authorize`;
+      const body = { client_id: clientId, redirect_uri: redirectUri, scope, state, response_type: responseType };
+      const result = apiBase
+        ? await fetch(postUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...(typeof document !== "undefined" && document.cookie.match(/multando_token=([^;]+)/)
+                ? { Authorization: `Bearer ${decodeURIComponent(document.cookie.match(/multando_token=([^;]+)/)![1])}` }
+                : {}),
+            },
+            body: JSON.stringify(body),
+          }).then((r) => { if (!r.ok) throw new Error(r.statusText); return r.json(); })
+        : await api.post<{ redirect_url: string }>("/oauth/authorize", body);
       window.location.href = result.redirect_url;
     } catch {
       setError("Authorization failed. Please try again.");
