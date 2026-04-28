@@ -134,10 +134,20 @@ export async function socialLogin(
   provider: "google" | "github",
   payload: { code: string; redirect_uri?: string }
 ): Promise<{ tokens: AuthTokens }> {
-  const tokens = await api.post<AuthTokens>(`/auth/oauth/${provider}`, {
+  const response = await api.post<{
+    access_token: string;
+    refresh_token: string;
+    token_type: string;
+    expires_in: number;
+  }>(`/auth/oauth/${provider}`, {
     code: payload.code,
     redirect_uri: payload.redirect_uri || "",
   });
+  // Backend returns snake_case; map to camelCase for setTokens
+  const tokens: AuthTokens = {
+    accessToken: response.access_token,
+    refreshToken: response.refresh_token,
+  };
   setTokens(tokens);
   return { tokens };
 }
