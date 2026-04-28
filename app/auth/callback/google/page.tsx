@@ -68,11 +68,11 @@ export default function GoogleCallbackPage() {
           || "";
         localStorage.removeItem("multando_post_login_redirect");
         localStorage.removeItem("multando_oauth_api_base");
-        localStorage.removeItem("multando_oauth_jwt");
+        // Keep multando_oauth_jwt — the consent page needs it!
         if (pendingRedirect) {
-          router.replace(pendingRedirect);
+          window.location.href = pendingRedirect;
         } else {
-          router.replace("/dashboard");
+          window.location.href = "/dashboard";
         }
       })
       .catch((err) => {
