@@ -42,23 +42,61 @@ function OAuthConsentForm() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Redirect to login if not authenticated
-  // Pass api_base so login authenticates against the correct backend
+  const [tokenVerified, setTokenVerified] = useState(false);
+
+  // Verify JWT works on the target backend, redirect to login if not
   useEffect(() => {
     if (authLoading) return;
-    if (!isAuthenticated) {
+
+    const redirectToLogin = () => {
       const currentParams = searchParams.toString();
       const loginParams = new URLSearchParams({
         redirect: `/oauth/authorize?${currentParams}`,
       });
       if (apiBase) loginParams.set("api_base", apiBase);
       router.replace(`/login?${loginParams.toString()}`);
+    };
+
+    if (!isAuthenticated) {
+      redirectToLogin();
+      return;
     }
-  }, [authLoading, isAuthenticated, router, searchParams]);
+
+    // If api_base is set, verify the stored JWT works on that backend
+    if (apiBase) {
+      let token: string | undefined;
+      if (typeof document !== "undefined") {
+        const match = document.cookie.match(/multando_token=([^;]+)/);
+        if (match) token = decodeURIComponent(match[1]);
+      }
+      if (!token && typeof localStorage !== "undefined") {
+        token = localStorage.getItem("token") || undefined;
+      }
+      if (!token) {
+        redirectToLogin();
+        return;
+      }
+      // Test the token against the target backend
+      fetch(`${apiBase}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }).then((r) => {
+        if (r.ok) {
+          setTokenVerified(true);
+        } else {
+          // Token doesn't work on target backend — need to re-login
+          // Clear tokens so we don't loop
+          import("@/lib/auth").then(({ clearTokens }) => clearTokens());
+          redirectToLogin();
+        }
+      }).catch(() => redirectToLogin());
+    } else {
+      setTokenVerified(true);
+    }
+  }, [authLoading, isAuthenticated, router, searchParams, apiBase]);
 
   // Fetch consent info
   useEffect(() => {
-    if (!isAuthenticated || !clientId) return;
+    if (!tokenVerified || !clientId) return;
 
     const fetchConsent = async () => {
       try {
