@@ -60,6 +60,12 @@ function LoginForm() {
             type="button"
             className="w-full"
             onClick={() => {
+              // Preserve any pending redirect (e.g. OAuth consent page)
+              const urlParams = new URLSearchParams(window.location.search);
+              const pendingRedirect = urlParams.get("redirect");
+              if (pendingRedirect) {
+                sessionStorage.setItem("multando_post_login_redirect", pendingRedirect);
+              }
               const params = new URLSearchParams({
                 client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",
                 redirect_uri: `${window.location.origin}/auth/callback/google`,

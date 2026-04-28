@@ -33,7 +33,14 @@ export default function GoogleCallbackPage() {
 
     socialLogin("google", { code, redirect_uri: redirectUri })
       .then(() => {
-        router.replace("/dashboard");
+        // Check for a pending redirect (e.g. OAuth consent page from a third-party app)
+        const pendingRedirect = sessionStorage.getItem("multando_post_login_redirect");
+        if (pendingRedirect) {
+          sessionStorage.removeItem("multando_post_login_redirect");
+          router.replace(pendingRedirect);
+        } else {
+          router.replace("/dashboard");
+        }
       })
       .catch((err) => {
         const message =
