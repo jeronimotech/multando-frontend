@@ -43,11 +43,16 @@ function OAuthConsentForm() {
   const [error, setError] = useState<string | null>(null);
 
   // Redirect to login if not authenticated
+  // Pass api_base so login authenticates against the correct backend
   useEffect(() => {
     if (authLoading) return;
     if (!isAuthenticated) {
       const currentParams = searchParams.toString();
-      router.replace(`/login?redirect=/oauth/authorize?${encodeURIComponent(currentParams)}`);
+      const loginParams = new URLSearchParams({
+        redirect: `/oauth/authorize?${currentParams}`,
+      });
+      if (apiBase) loginParams.set("api_base", apiBase);
+      router.replace(`/login?${loginParams.toString()}`);
     }
   }, [authLoading, isAuthenticated, router, searchParams]);
 

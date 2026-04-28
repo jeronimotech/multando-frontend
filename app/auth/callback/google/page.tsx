@@ -31,9 +31,36 @@ export default function GoogleCallbackPage() {
 
     const redirectUri = `${window.location.origin}/auth/callback/google`;
 
-    socialLogin("google", { code, redirect_uri: redirectUri })
+    // Check if we need to authenticate against a different backend
+    // (e.g. sandbox for OAuth consent flows)
+    const oauthApiBase = sessionStorage.getItem("multando_oauth_api_base");
+
+    const doLogin = async () => {
+      if (oauthApiBase) {
+        // Authenticate against the target backend (sandbox)
+        // so the JWT is valid there for the consent POST
+        sessionStorage.removeItem("multando_oauth_api_base");
+        const resp = await fetch(`${oauthApiBase}/auth/oauth/google`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, redirect_uri: redirectUri }),
+        });
+        if (!resp.ok) throw new Error(`Auth failed: ${resp.status}`);
+        const data = await resp.json();
+        // Store the target backend's JWT
+        const { setTokens } = await import("@/lib/auth");
+        setTokens({
+          accessToken: data.access_token,
+          refreshToken: data.refresh_token,
+        });
+      } else {
+        // Normal login against default backend
+        await socialLogin("google", { code, redirect_uri: redirectUri });
+      }
+    };
+
+    doLogin()
       .then(() => {
-        // Check for a pending redirect (e.g. OAuth consent page from a third-party app)
         const pendingRedirect = sessionStorage.getItem("multando_post_login_redirect");
         if (pendingRedirect) {
           sessionStorage.removeItem("multando_post_login_redirect");
