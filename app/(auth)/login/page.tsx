@@ -65,10 +65,10 @@ function LoginForm() {
               const pendingRedirect = urlParams.get("redirect");
               const oauthApiBase = urlParams.get("api_base");
               if (pendingRedirect) {
-                sessionStorage.setItem("multando_post_login_redirect", pendingRedirect);
+                localStorage.setItem("multando_post_login_redirect", pendingRedirect);
               }
               if (oauthApiBase) {
-                sessionStorage.setItem("multando_oauth_api_base", oauthApiBase);
+                localStorage.setItem("multando_oauth_api_base", oauthApiBase);
               }
               const params = new URLSearchParams({
                 client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",

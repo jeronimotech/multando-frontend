@@ -64,8 +64,8 @@ function OAuthConsentForm() {
     };
 
     if (apiBase) {
-      // Custom backend — read JWT from sessionStorage (isolated from useAuth)
-      const token = sessionStorage.getItem("multando_oauth_jwt");
+      // Custom backend — read JWT from localStorage (isolated from useAuth)
+      const token = localStorage.getItem("multando_oauth_jwt");
       if (!token) {
         redirectToLogin();
         return;
@@ -79,7 +79,7 @@ function OAuthConsentForm() {
             setTargetUser(userData);
             setTokenVerified(true);
           } else {
-            sessionStorage.removeItem("multando_oauth_jwt");
+            localStorage.removeItem("multando_oauth_jwt");
             redirectToLogin();
           }
         })
@@ -134,7 +134,7 @@ function OAuthConsentForm() {
       // Get JWT — from sessionStorage for cross-backend, cookie/localStorage otherwise
       let token: string | undefined;
       if (apiBase) {
-        token = sessionStorage.getItem("multando_oauth_jwt") || undefined;
+        token = localStorage.getItem("multando_oauth_jwt") || undefined;
       } else {
         if (typeof document !== "undefined") {
           const match = document.cookie.match(/multando_token=([^;]+)/);

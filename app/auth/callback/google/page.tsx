@@ -33,14 +33,14 @@ export default function GoogleCallbackPage() {
 
     // Check if we need to authenticate against a different backend
     // (e.g. sandbox for OAuth consent flows)
-    const oauthApiBase = sessionStorage.getItem("multando_oauth_api_base");
+    const oauthApiBase = localStorage.getItem("multando_oauth_api_base");
 
     const doLogin = async () => {
       if (oauthApiBase) {
         // Authenticate against the target backend (sandbox)
         // Store JWT in sessionStorage (NOT cookies/localStorage) so
         // the global useAuth hook can't see or clear it.
-        sessionStorage.removeItem("multando_oauth_api_base");
+        localStorage.removeItem("multando_oauth_api_base");
         const resp = await fetch(`${oauthApiBase}/auth/oauth/google`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -49,7 +49,7 @@ export default function GoogleCallbackPage() {
         if (!resp.ok) throw new Error(`Auth failed: ${resp.status}`);
         const data = await resp.json();
         // Store in a separate key that useAuth doesn't touch
-        sessionStorage.setItem("multando_oauth_jwt", data.access_token);
+        localStorage.setItem("multando_oauth_jwt", data.access_token);
       } else {
         // Normal login against default backend
         await socialLogin("google", { code, redirect_uri: redirectUri });
@@ -58,9 +58,9 @@ export default function GoogleCallbackPage() {
 
     doLogin()
       .then(() => {
-        const pendingRedirect = sessionStorage.getItem("multando_post_login_redirect");
+        const pendingRedirect = localStorage.getItem("multando_post_login_redirect");
         if (pendingRedirect) {
-          sessionStorage.removeItem("multando_post_login_redirect");
+          localStorage.removeItem("multando_post_login_redirect");
           router.replace(pendingRedirect);
         } else {
           router.replace("/dashboard");
