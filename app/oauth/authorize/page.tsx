@@ -114,7 +114,7 @@ function OAuthConsentForm() {
     };
 
     fetchConsent();
-  }, [isAuthenticated, clientId, redirectUri, scope]);
+  }, [tokenVerified, clientId, redirectUri, scope, apiBase]);
 
   const handleAuthorize = useCallback(async () => {
     setSubmitting(true);
@@ -178,7 +178,18 @@ function OAuthConsentForm() {
     }
   }, [redirectUri, state, router]);
 
-  if (authLoading || (!isAuthenticated && !error)) {
+  // Show loading spinner only while verifying auth.
+  // When apiBase is set, we don't depend on useAuth at all.
+  if (!apiBase && (authLoading || (!isAuthenticated && !error))) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-surface-50 dark:bg-surface-900">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
+      </div>
+    );
+  }
+
+  // For cross-backend flows, show spinner until token is verified
+  if (apiBase && !tokenVerified && !error) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-surface-50 dark:bg-surface-900">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-500 border-t-transparent" />
