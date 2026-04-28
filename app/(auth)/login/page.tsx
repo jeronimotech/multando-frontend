@@ -60,16 +60,15 @@ function LoginForm() {
             type="button"
             className="w-full"
             onClick={() => {
-              // Preserve pending redirect + api_base for OAuth consent flows
+              // Encode redirect + api_base into Google's state param
+              // so it survives any storage/tab issues on mobile
               const urlParams = new URLSearchParams(window.location.search);
-              const pendingRedirect = urlParams.get("redirect");
-              const oauthApiBase = urlParams.get("api_base");
-              if (pendingRedirect) {
-                localStorage.setItem("multando_post_login_redirect", pendingRedirect);
-              }
-              if (oauthApiBase) {
-                localStorage.setItem("multando_oauth_api_base", oauthApiBase);
-              }
+              const pendingRedirect = urlParams.get("redirect") || "";
+              const oauthApiBase = urlParams.get("api_base") || "";
+              const statePayload = btoa(JSON.stringify({
+                redirect: pendingRedirect,
+                api_base: oauthApiBase,
+              }));
               const params = new URLSearchParams({
                 client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "",
                 redirect_uri: `${window.location.origin}/auth/callback/google`,
@@ -77,6 +76,7 @@ function LoginForm() {
                 scope: "openid email profile",
                 access_type: "offline",
                 prompt: "select_account",
+                state: statePayload,
               });
               window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
             }}

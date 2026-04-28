@@ -31,9 +31,13 @@ export default function GoogleCallbackPage() {
 
     const redirectUri = `${window.location.origin}/auth/callback/google`;
 
-    // Check if we need to authenticate against a different backend
-    // (e.g. sandbox for OAuth consent flows)
-    const oauthApiBase = localStorage.getItem("multando_oauth_api_base");
+    // Decode state param — carries redirect + api_base through Google redirect
+    const stateParam = searchParams.get("state") || "";
+    let stateData: { redirect?: string; api_base?: string } = {};
+    try {
+      if (stateParam) stateData = JSON.parse(atob(stateParam));
+    } catch { /* invalid state — ignore */ }
+    const oauthApiBase = stateData.api_base || localStorage.getItem("multando_oauth_api_base") || "";
 
     const doLogin = async () => {
       if (oauthApiBase) {
@@ -58,9 +62,14 @@ export default function GoogleCallbackPage() {
 
     doLogin()
       .then(() => {
-        const pendingRedirect = localStorage.getItem("multando_post_login_redirect");
+        // Check state param first, then localStorage fallback
+        const pendingRedirect = stateData.redirect
+          || localStorage.getItem("multando_post_login_redirect")
+          || "";
+        localStorage.removeItem("multando_post_login_redirect");
+        localStorage.removeItem("multando_oauth_api_base");
+        localStorage.removeItem("multando_oauth_jwt");
         if (pendingRedirect) {
-          localStorage.removeItem("multando_post_login_redirect");
           router.replace(pendingRedirect);
         } else {
           router.replace("/dashboard");
