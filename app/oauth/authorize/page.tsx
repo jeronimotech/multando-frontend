@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, Suspense } from "react";
+import { useCallback, useEffect, useRef, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "@/hooks/use-translation";
 import { useAuth } from "@/hooks/use-auth";
@@ -43,12 +43,18 @@ function OAuthConsentForm() {
   const [error, setError] = useState<string | null>(null);
 
   const [tokenVerified, setTokenVerified] = useState(false);
+  const [targetUser, setTargetUser] = useState<{ email?: string } | null>(null);
+  const verifyAttempted = useRef(false);
 
-  // Verify JWT works on the target backend, redirect to login if not
+  // Verify auth — two paths:
+  // 1. No api_base: use the global useAuth hook (checks default/production backend)
+  // 2. With api_base: verify JWT directly against the target backend,
+  //    completely ignoring useAuth (which would check the wrong backend)
   useEffect(() => {
-    if (authLoading) return;
+    if (verifyAttempted.current) return;
 
     const redirectToLogin = () => {
+      verifyAttempted.current = true;
       const currentParams = searchParams.toString();
       const loginParams = new URLSearchParams({
         redirect: `/oauth/authorize?${currentParams}`,
@@ -57,13 +63,8 @@ function OAuthConsentForm() {
       router.replace(`/login?${loginParams.toString()}`);
     };
 
-    if (!isAuthenticated) {
-      redirectToLogin();
-      return;
-    }
-
-    // If api_base is set, verify the stored JWT works on that backend
     if (apiBase) {
+      // Custom backend — verify JWT directly, don't wait for useAuth
       let token: string | undefined;
       if (typeof document !== "undefined") {
         const match = document.cookie.match(/multando_token=([^;]+)/);
@@ -76,20 +77,27 @@ function OAuthConsentForm() {
         redirectToLogin();
         return;
       }
-      // Test the token against the target backend
       fetch(`${apiBase}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` },
-      }).then((r) => {
-        if (r.ok) {
-          setTokenVerified(true);
-        } else {
-          // Token doesn't work on target backend — need to re-login
-          // Clear tokens so we don't loop
-          import("@/lib/auth").then(({ clearTokens }) => clearTokens());
-          redirectToLogin();
-        }
-      }).catch(() => redirectToLogin());
+      })
+        .then(async (r) => {
+          if (r.ok) {
+            const userData = await r.json();
+            setTargetUser(userData);
+            setTokenVerified(true);
+          } else {
+            import("@/lib/auth").then(({ clearTokens }) => clearTokens());
+            redirectToLogin();
+          }
+        })
+        .catch(() => redirectToLogin());
     } else {
+      // Default backend — use useAuth
+      if (authLoading) return;
+      if (!isAuthenticated) {
+        redirectToLogin();
+        return;
+      }
       setTokenVerified(true);
     }
   }, [authLoading, isAuthenticated, router, searchParams, apiBase]);
@@ -295,7 +303,7 @@ function OAuthConsentForm() {
               {/* Logged-in-as footer */}
               {user && (
                 <p className="mt-6 text-center text-xs text-surface-400 dark:text-surface-500">
-                  {t("oauth.logged_in_as")} {user.email}
+                  {t("oauth.logged_in_as")} {targetUser?.email || user?.email || ""}
                 </p>
               )}
             </>
