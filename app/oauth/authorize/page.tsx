@@ -81,22 +81,46 @@ function OAuthConsentForm() {
     setSubmitting(true);
     setError(null);
     try {
-      const postUrl = `${apiBase || ""}/oauth/authorize`;
-      const body = { client_id: clientId, redirect_uri: redirectUri, scope, state, response_type: responseType };
+      // Backend expects query params, not JSON body
+      const queryParams = new URLSearchParams({
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        scope,
+        ...(state ? { state } : {}),
+      });
+      const postUrl = apiBase
+        ? `${apiBase}/oauth/authorize?${queryParams}`
+        : `/oauth/authorize?${queryParams}`;
+
+      // Get JWT from cookie or localStorage
+      let token: string | undefined;
+      if (typeof document !== "undefined") {
+        const match = document.cookie.match(/multando_token=([^;]+)/);
+        if (match) token = decodeURIComponent(match[1]);
+      }
+      if (!token && typeof localStorage !== "undefined") {
+        token = localStorage.getItem("token") || undefined;
+      }
+
       const result = apiBase
         ? await fetch(postUrl, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              ...(typeof document !== "undefined" && document.cookie.match(/multando_token=([^;]+)/)
-                ? { Authorization: `Bearer ${decodeURIComponent(document.cookie.match(/multando_token=([^;]+)/)![1])}` }
-                : {}),
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
-            body: JSON.stringify(body),
-          }).then((r) => { if (!r.ok) throw new Error(r.statusText); return r.json(); })
-        : await api.post<{ redirect_url: string }>("/oauth/authorize", body);
+          }).then(async (r) => {
+            if (!r.ok) {
+              const errBody = await r.text().catch(() => "");
+              console.error("OAuth authorize POST failed:", r.status, errBody);
+              throw new Error(`${r.status}: ${errBody}`);
+            }
+            return r.json();
+          })
+        : await api.post<{ redirect_url: string }>(postUrl);
       window.location.href = result.redirect_url;
-    } catch {
+    } catch (err) {
+      console.error("Authorization error:", err);
       setError("Authorization failed. Please try again.");
       setSubmitting(false);
     }
