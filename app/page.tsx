@@ -9,7 +9,7 @@ import { DynamicReportMap } from '@/components/map/dynamic-map';
 import { ReportCard, ReportCardSkeleton } from '@/components/reports/report-card';
 import { PlateLeaderboard } from '@/components/reports/plate-leaderboard';
 import { useReportMarkers, useReports } from '@/hooks/use-reports';
-import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Coins, Zap, Code2, Building2, Check, Store, Gift, ShoppingBag, Coffee, Smartphone, GitBranch, Server, Globe, Network } from 'lucide-react';
+import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Coins, Zap, Code2, Building2, Check, Store, Gift, ShoppingBag, Coffee, Smartphone, GitBranch, Server, Globe, Network, MessageCircle, Twitter, Layers } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
 import { usePublicIntegrations } from '@/hooks/use-transparency';
 
@@ -427,6 +427,64 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Report Channels Section */}
+        <section className="border-t border-surface-200 bg-white py-16 dark:border-surface-700 dark:bg-surface-900 sm:py-24">
+          <div className="container-app">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight text-surface-900 dark:text-white sm:text-4xl">
+                {t('landing.channels_title')}
+              </h2>
+              <p className="mt-4 text-lg text-surface-600 dark:text-surface-300">
+                {t('landing.channels_desc')}
+              </p>
+            </div>
+
+            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                {
+                  icon: Smartphone,
+                  titleKey: 'landing.channel_mobile_title',
+                  descKey: 'landing.channel_mobile_desc',
+                },
+                {
+                  icon: MessageCircle,
+                  titleKey: 'landing.channel_whatsapp_title',
+                  descKey: 'landing.channel_whatsapp_desc',
+                },
+                {
+                  icon: Twitter,
+                  titleKey: 'landing.channel_twitter_title',
+                  descKey: 'landing.channel_twitter_desc',
+                },
+                {
+                  icon: Layers,
+                  titleKey: 'landing.channel_sdk_title',
+                  descKey: 'landing.channel_sdk_desc',
+                },
+              ].map((ch) => (
+                <div
+                  key={ch.titleKey}
+                  className="rounded-xl border border-surface-200 bg-surface-50 p-6 dark:border-surface-700 dark:bg-surface-800"
+                >
+                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-brand-100 dark:bg-brand-900">
+                    <ch.icon className="h-5 w-5 text-brand-500" />
+                  </div>
+                  <h3 className="text-base font-semibold text-surface-900 dark:text-white">
+                    {t(ch.titleKey)}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-surface-600 dark:text-surface-300">
+                    {t(ch.descKey)}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <p className="mx-auto mt-8 max-w-2xl text-center text-xs text-surface-500 dark:text-surface-400">
+              {t('landing.channels_note')}
+            </p>
           </div>
         </section>
 

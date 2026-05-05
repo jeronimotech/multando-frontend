@@ -15,6 +15,7 @@ Open-source frontend for the **Multando** traffic infraction reporting platform.
 - **Transparency Dashboard** — Public statistics on city-level enforcement
 - **Custodial Wallet** — Balance, staking, and transaction history
 - **Authority Portal** — Government data access and bulk management
+- **Multi-channel Report Triage** — The authority/admin panel manages Twitter (X) hashtag configuration per jurisdiction and triages reports sourced from WhatsApp conversations and the Twitter scraper alongside web/mobile submissions
 
 ## Quick Start
 
