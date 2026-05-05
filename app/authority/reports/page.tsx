@@ -5,9 +5,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuthorityReports, useExportReports } from "@/hooks/use-authority";
+import {
+  useSDMSubmission,
+  useSDMPrefill,
+  useTriggerSDMSubmission,
+  type SDMSubmissionStatus,
+} from "@/hooks/use-sdm";
 import { cn, formatDate } from "@/lib/utils";
 import { useTranslation } from "@/hooks/use-translation";
 import type { ReportStatus, ReportFilters, ReportSummary } from "@/types/report";
+
+// Bogota bounding box — matches the backend's resolve_localidad logic.
+function isBogotaLocation(lat: number, lon: number): boolean {
+  return lat >= 4.45 && lat <= 4.85 && lon >= -74.25 && lon <= -73.95;
+}
 
 const STATUS_OPTIONS: { value: ReportStatus | "all"; labelKey: string }[] = [
   { value: "all", labelKey: "all" },
@@ -588,6 +599,11 @@ function ReportDetailDrawer({
             </p>
           </div>
 
+          {/* SDM Bogota — only for verified Bogota reports */}
+          {isBogotaLocation(report.location.latitude, report.location.longitude) && (
+            <SDMSection reportId={report.id} reportShortId={report.shortId} />
+          )}
+
           {/* Actions */}
           <div className="flex gap-3 pt-4">
             {report.status === "pending" && (
@@ -609,6 +625,191 @@ function ReportDetailDrawer({
         </div>
       </div>
     </>
+  );
+}
+
+// SDM Bogota Submission Section
+const SDM_STATUS_STYLES: Record<SDMSubmissionStatus, { label: string; cls: string }> = {
+  pending: { label: "Pending", cls: "bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300" },
+  uploading_evidence: { label: "Uploading evidence…", cls: "bg-info-100 text-info-700 dark:bg-info-900/30 dark:text-info-300" },
+  ready_for_manual: { label: "Ready to submit", cls: "bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300" },
+  submitted: { label: "Submitted", cls: "bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300" },
+  failed: { label: "Failed", cls: "bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300" },
+};
+
+function SDMSection({ reportId, reportShortId }: { reportId: string; reportShortId: string }) {
+  const { data: submission, isLoading } = useSDMSubmission(reportId);
+  const prefillMutation = useSDMPrefill();
+  const triggerMutation = useTriggerSDMSubmission();
+
+  const handleOpenPrefill = useCallback(async () => {
+    // Prefer the stored URL (includes Drive evidence links). Fall back to a
+    // freshly generated one if the submission record doesn't have it yet.
+    const stored = submission?.prefill_url;
+    if (stored) {
+      window.open(stored, "_blank", "noopener,noreferrer");
+      return;
+    }
+    try {
+      const result = await prefillMutation.mutateAsync(reportId);
+      window.open(result.prefill_url, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      console.error("Failed to generate SDM pre-fill URL:", err);
+    }
+  }, [submission?.prefill_url, prefillMutation, reportId]);
+
+  const handleTrigger = useCallback(() => {
+    triggerMutation.mutate(reportId);
+  }, [triggerMutation, reportId]);
+
+  const handleMarkSubmitted = useCallback(async () => {
+    // No dedicated endpoint yet — admin marks externally. Re-running the
+    // trigger is safe and re-uploads evidence; for now this UI just opens
+    // the SDM responses dashboard so the admin can confirm receipt.
+    window.open(
+      "https://docs.google.com/forms/d/e/1FAIpQLSeCG84Le6cCxegrj7ns_oA36t1GJe4sHKdblOYum_vuTOXYFQ/viewscore",
+      "_blank",
+      "noopener,noreferrer",
+    );
+  }, []);
+
+  return (
+    <div>
+      <h3 className="mb-2 flex items-center gap-2 text-sm font-medium text-surface-500 dark:text-surface-400">
+        <BogotaIcon className="h-4 w-4" />
+        SDM Bogota
+      </h3>
+      <div className="space-y-3 rounded-lg bg-surface-50 p-4 dark:bg-surface-900">
+        {isLoading && (
+          <p className="text-sm text-surface-500 dark:text-surface-400">
+            Loading SDM status…
+          </p>
+        )}
+
+        {!isLoading && !submission && (
+          <>
+            <p className="text-sm text-surface-700 dark:text-surface-300">
+              No SDM submission yet for report {reportShortId}.
+            </p>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleTrigger}
+              disabled={triggerMutation.isPending}
+            >
+              {triggerMutation.isPending ? "Preparing…" : "Prepare SDM submission"}
+            </Button>
+          </>
+        )}
+
+        {!isLoading && submission && (
+          <>
+            <div className="flex items-center justify-between">
+              <span
+                className={cn(
+                  "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+                  SDM_STATUS_STYLES[submission.status]?.cls
+                    ?? "bg-surface-200 text-surface-700",
+                )}
+              >
+                {SDM_STATUS_STYLES[submission.status]?.label ?? submission.status}
+              </span>
+              {submission.attempts > 0 && (
+                <span className="text-xs text-surface-500 dark:text-surface-400">
+                  Attempts: {submission.attempts}
+                </span>
+              )}
+            </div>
+
+            {submission.error_message && (
+              <p className="text-xs text-danger-600 dark:text-danger-400">
+                {submission.error_message}
+              </p>
+            )}
+
+            {submission.drive_evidence_links?.length > 0 && (
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-surface-500 dark:text-surface-400">
+                  Drive evidence ({submission.drive_evidence_links.length})
+                </p>
+                <ul className="space-y-1">
+                  {submission.drive_evidence_links.map((link, idx) => (
+                    <li key={link} className="truncate text-xs">
+                      <a
+                        href={link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-brand-600 underline hover:text-brand-700 dark:text-brand-400"
+                      >
+                        Evidence #{idx + 1}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {submission.submitted_at && (
+              <p className="text-xs text-surface-500 dark:text-surface-400">
+                Submitted {formatDate(submission.submitted_at)}
+              </p>
+            )}
+
+            <div className="flex flex-wrap gap-2 pt-1">
+              {submission.status !== "submitted" && (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleOpenPrefill}
+                  disabled={prefillMutation.isPending}
+                >
+                  <ExternalLinkIcon className="mr-1.5 h-4 w-4" />
+                  {prefillMutation.isPending ? "Opening…" : "Open SDM form"}
+                </Button>
+              )}
+              {(submission.status === "failed" || submission.status === "pending") && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleTrigger}
+                  disabled={triggerMutation.isPending}
+                >
+                  {triggerMutation.isPending ? "Retrying…" : "Retry"}
+                </Button>
+              )}
+              {submission.status === "submitted" && (
+                <Button variant="outline" size="sm" onClick={handleMarkSubmitted}>
+                  View SDM responses
+                </Button>
+              )}
+            </div>
+
+            <p className="border-t border-surface-200 pt-2 text-[11px] leading-relaxed text-surface-500 dark:border-surface-700 dark:text-surface-400">
+              Click <em>Open SDM form</em> to launch the pre-filled Google Form
+              in a new tab. Attach the evidence file from the Drive link, then
+              submit. The form requires a signed-in Google account.
+            </p>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function BogotaIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+    </svg>
+  );
+}
+
+function ExternalLinkIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+    </svg>
   );
 }
 
