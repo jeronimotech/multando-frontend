@@ -64,6 +64,9 @@ export interface ReporterInfo {
   verifiedReports: number;
 }
 
+// Report source — where the report originated
+export type ReportSourceValue = "web" | "mobile" | "whatsapp" | "sdk" | "twitter";
+
 // Report summary (for lists and markers)
 export interface ReportSummary {
   id: string;
@@ -76,6 +79,7 @@ export interface ReportSummary {
   location: Location;
   thumbnailUrl?: string;
   createdAt: string;
+  source?: ReportSourceValue;
 }
 
 // Report marker (for map display)

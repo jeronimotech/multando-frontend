@@ -342,7 +342,10 @@ export default function AuthorityReportsPage() {
                             {report.location.city || "Unknown"}
                           </td>
                           <td className="whitespace-nowrap px-6 py-4">
-                            <StatusBadge status={report.status} />
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <StatusBadge status={report.status} />
+                              {report.source && <SourceBadge source={report.source} />}
+                            </div>
                           </td>
                           <td className="whitespace-nowrap px-6 py-4 text-sm text-surface-600 dark:text-surface-300">
                             {formatDate(report.createdAt, {
@@ -471,6 +474,58 @@ function StatusBadge({ status }: { status: ReportStatus }) {
   );
 }
 
+// Source Badge — visual indicator for report origin
+const SOURCE_META: Record<
+  string,
+  { label: string; cls: string; emoji: string }
+> = {
+  web: {
+    label: "Web",
+    cls: "bg-info-100 text-info-700 dark:bg-info-900/30 dark:text-info-300",
+    emoji: "🌐",
+  },
+  mobile: {
+    label: "Mobile",
+    cls: "bg-info-100 text-info-700 dark:bg-info-900/30 dark:text-info-300",
+    emoji: "📱",
+  },
+  whatsapp: {
+    label: "WhatsApp",
+    cls: "bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-300",
+    emoji: "💬",
+  },
+  sdk: {
+    label: "Partner app",
+    cls: "bg-surface-200 text-surface-700 dark:bg-surface-700 dark:text-surface-300",
+    emoji: "🔌",
+  },
+  twitter: {
+    label: "Twitter / X",
+    cls: "bg-info-100 text-info-700 dark:bg-info-900/30 dark:text-info-300",
+    emoji: "🐦",
+  },
+};
+
+function SourceBadge({ source }: { source: string }) {
+  const meta = SOURCE_META[source] ?? {
+    label: source,
+    cls: "bg-surface-200 text-surface-700",
+    emoji: "•",
+  };
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium",
+        meta.cls
+      )}
+      title={`Source: ${meta.label}`}
+    >
+      <span className="text-[10px]">{meta.emoji}</span>
+      {meta.label}
+    </span>
+  );
+}
+
 // Report Detail Drawer Component
 function ReportDetailDrawer({
   report,
@@ -509,12 +564,15 @@ function ReportDetailDrawer({
 
         {/* Content */}
         <div className="space-y-6 p-6">
-          {/* Status */}
+          {/* Status + Source */}
           <div>
             <h3 className="mb-2 text-sm font-medium text-surface-500 dark:text-surface-400">
               {t('authority.status')}
             </h3>
-            <StatusBadge status={report.status} />
+            <div className="flex flex-wrap items-center gap-2">
+              <StatusBadge status={report.status} />
+              {report.source && <SourceBadge source={report.source} />}
+            </div>
           </div>
 
           {/* Evidence */}

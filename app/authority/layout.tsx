@@ -22,6 +22,7 @@ import {
   Users,
   Webhook,
   Trophy,
+  Twitter,
 } from "lucide-react";
 
 type NavItem = {
@@ -44,6 +45,7 @@ const navigation: NavItem[] = [
   { name: "Leaderboard", href: "/authority/leaderboard", icon: Trophy },
   { name: "Staff", href: "/authority/staff", icon: Users },
   { name: "Webhooks", href: "/authority/webhooks", icon: Webhook },
+  { name: "Twitter", href: "/authority/twitter", icon: Twitter },
   { name: "Settings", href: "/authority/settings", icon: Settings },
 ];
 
