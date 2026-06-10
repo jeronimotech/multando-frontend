@@ -9,9 +9,10 @@ import { DynamicReportMap } from '@/components/map/dynamic-map';
 import { ReportCard, ReportCardSkeleton } from '@/components/reports/report-card';
 import { PlateLeaderboard } from '@/components/reports/plate-leaderboard';
 import { useReportMarkers, useReports } from '@/hooks/use-reports';
-import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Coins, Zap, Code2, Building2, Check, Store, Gift, ShoppingBag, Coffee, Smartphone, GitBranch, Server, Globe, Network, MessageCircle, Twitter, Layers } from 'lucide-react';
+import { ArrowRight, MapPin, Camera, Award, Shield, ChevronRight, Wallet, Coins, Zap, Code2, Building2, Check, Store, Gift, ShoppingBag, Coffee, Smartphone, GitBranch, Server, Globe, Network, MessageCircle, Twitter, Layers, ExternalLink } from 'lucide-react';
 import { useTranslation } from '@/hooks/use-translation';
 import { usePublicIntegrations } from '@/hooks/use-transparency';
+import { cn } from '@/lib/utils';
 
 export default function HomePage() {
   const { data: markers = [], isLoading: markersLoading } = useReportMarkers();
@@ -633,10 +634,35 @@ export default function HomePage() {
             {/* Federation Diagram */}
             <div className="mx-auto mt-12 flex max-w-3xl flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
               <div className="flex flex-col gap-3">
-                {['City A', 'City B', 'City C'].map((city) => (
-                  <div key={city} className="flex items-center gap-2 rounded-lg border border-surface-300 bg-white px-4 py-3 dark:border-surface-600 dark:bg-surface-900">
-                    <Server className="h-4 w-4 text-surface-500" />
-                    <span className="text-sm font-medium text-surface-700 dark:text-surface-300">{city}</span>
+                {[
+                  { name: 'Bogotá D.C.', live: true },
+                  { name: 'City B', live: false },
+                  { name: 'City C', live: false },
+                ].map((city) => (
+                  <div
+                    key={city.name}
+                    className={cn(
+                      "flex items-center gap-2 rounded-lg border px-4 py-3",
+                      city.live
+                        ? "border-brand-400 bg-brand-50 dark:border-brand-600 dark:bg-brand-950/30"
+                        : "border-surface-300 bg-white dark:border-surface-600 dark:bg-surface-900"
+                    )}
+                  >
+                    <Server className={cn("h-4 w-4", city.live ? "text-brand-500" : "text-surface-500")} />
+                    <span className={cn(
+                      "text-sm font-medium",
+                      city.live ? "text-surface-900 dark:text-white" : "text-surface-700 dark:text-surface-300"
+                    )}>
+                      {city.name}
+                    </span>
+                    {city.live && (
+                      <span className="ml-auto flex items-center gap-1">
+                        <span className="relative flex h-2 w-2">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success-400 opacity-75" />
+                          <span className="relative inline-flex h-2 w-2 rounded-full bg-success-500" />
+                        </span>
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -667,6 +693,41 @@ export default function HomePage() {
                   </p>
                 </div>
               ))}
+            </div>
+
+            {/* Live adopter — Bogotá */}
+            <div className="mx-auto mt-12 max-w-3xl overflow-hidden rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-50 to-white shadow-sm dark:border-brand-900/50 dark:from-brand-950/30 dark:to-surface-900">
+              <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:gap-6 sm:p-8">
+                <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl bg-brand-500/10 dark:bg-brand-500/20">
+                  <Building2 className="h-7 w-7 text-brand-500" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-success-100 px-2.5 py-0.5 text-xs font-semibold text-success-700 dark:bg-success-900/30 dark:text-success-300">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success-400 opacity-75" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-success-500" />
+                    </span>
+                    {t('landing.federation_live_badge')}
+                  </div>
+                  <h3 className="text-lg font-bold text-surface-900 dark:text-white">
+                    {t('landing.federation_live_title')}
+                  </h3>
+                  <p className="mt-1 text-sm leading-relaxed text-surface-600 dark:text-surface-300">
+                    {t('landing.federation_live_desc')}
+                  </p>
+                </div>
+                <a
+                  href="https://atulaa-test.movilidadbogota.gov.co/salvajes"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-shrink-0"
+                >
+                  <Button variant="outline" size="sm">
+                    {t('landing.federation_live_cta')}
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </Button>
+                </a>
+              </div>
             </div>
 
             <div className="mt-10 text-center">

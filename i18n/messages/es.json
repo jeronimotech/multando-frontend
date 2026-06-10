@@ -885,6 +885,10 @@
     "federation_f2": "Dashboard de estadisticas nacionales",
     "federation_f3": "Deteccion de patrones entre ciudades",
     "federation_f4": "Economia de tokens MULTA compartida",
+    "federation_live_badge": "Ya en vivo",
+    "federation_live_title": "Bogotá ya está en la red",
+    "federation_live_desc": "La Secretaría Distrital de Movilidad de Bogotá opera «Salvajes en la Vía» sobre Multando — la ciudadanía inicia sesión con Connect Multando y sus reportes fluyen al proceso de gestión de la entidad.",
+    "federation_live_cta": "Visitar Salvajes en la Vía",
     "authority_feature5": "Auto-hospeda o usa nuestro servicio gestionado"
   },
   "authority_admin": {

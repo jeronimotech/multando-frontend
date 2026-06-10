@@ -885,6 +885,10 @@
     "federation_f2": "National statistics dashboard",
     "federation_f3": "Cross-city pattern detection",
     "federation_f4": "Shared MULTA token economy",
+    "federation_live_badge": "Now live",
+    "federation_live_title": "Bogotá is on the network",
+    "federation_live_desc": "The Secretaría Distrital de Movilidad de Bogotá runs «Salvajes en la Vía» on Multando — citizens log in with Connect Multando and their reports flow into the city's enforcement pipeline.",
+    "federation_live_cta": "Visit Salvajes en la Vía",
     "authority_feature5": "Self-host or use our managed service"
   },
   "authority_admin": {
