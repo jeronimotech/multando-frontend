@@ -1,7 +1,16 @@
 # Stage 1: Install dependencies and build
 FROM node:18-alpine AS builder
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Pin pnpm to match lockfileVersion 9.0. The build broke once pnpm@latest
+# became pnpm 11 (which requires Node 20+ and crashed on Node 18's corepack).
+# Node 18 is kept because native deps (usb, tiny-secp256k1) ship prebuilt
+# binaries for its ABI; Node 20 would force a gyp rebuild needing build tools.
+RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
+
+# Build tools for native deps (usb, bufferutil, utf-8-validate, secp256k1)
+# pulled in by the Solana / wallet-adapter dependency tree. node-gyp needs
+# python3 + a C/C++ toolchain; usb additionally needs libusb + eudev headers.
+RUN apk add --no-cache python3 make g++ linux-headers eudev-dev libusb-dev
 
 WORKDIR /app
 
@@ -28,7 +37,9 @@ RUN pnpm build
 # Stage 2: Production runner
 FROM node:18-alpine AS runner
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Runner only runs `node server.js`; pnpm not strictly needed, but keep it
+# pinned and consistent with the builder stage.
+RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
 
 WORKDIR /app
 
